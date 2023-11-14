@@ -1,0 +1,69 @@
+{
+    "maps": [
+        {
+            "fileName": "area1.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": 0
+        },
+        {
+            "fileName": "area2.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": 0
+        },
+        {
+            "fileName": "area3.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": 0
+        },
+        {
+            "fileName": "area4.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": 352
+        },
+        {
+            "fileName": "area5.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": 352
+        },
+        {
+            "fileName": "area6.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": 352
+        },
+        {
+            "fileName": "area7.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": 704
+        },
+        {
+            "fileName": "area8.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": 704
+        },
+        {
+            "fileName": "area9.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": 704
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
