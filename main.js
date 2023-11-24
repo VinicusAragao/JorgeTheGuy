@@ -1,14 +1,16 @@
 import {Input} from './scripts/input.js'
 import {Canvas} from './scripts/canvas.js'
 import {Loader} from './scripts/loader.js'
-import {Vector2D} from './scripts/geometry.js'
+import {Vector2D,randomInt} from './scripts/geometry.js'
 import {Pathfinder} from './scripts/pathfinding.js'
+import {Area} from './scripts/areas.js'
 import {
 	DialogBox,
 	Inventory
 } from './scripts/interface.js'
 
 import * as Entities from './scripts/entities.js'
+import * as Items from './scripts/items.js' 
 
 Array.prototype.findAndRemove = function (item){
 	for(let i = 0; i < this.length;i++){
@@ -19,7 +21,7 @@ Array.prototype.findAndRemove = function (item){
 }
 class Game{
 	constructor(){
-		this.resolution = new Vector2D(1280,736)
+		this.resolution = new Vector2D(1280,704)
 
 		this.desiredFPS = 60
 		this.targetFrameRate = 1000 / this.desiredFPS
@@ -28,116 +30,41 @@ class Game{
 		this.running = false
 		this.animationRequest = 0
 
-		this.entities = []
+		this.currentArea = null
+		this.pausedArea = null
 		this.userInterfaces = []
 		this.player = null
+	}
+	changeArea(cell,direction){
+		const left = Number(cell.x + direction.x === -1)
+		const top = Number(cell.y + direction.y === -1)
+		const right = Number(cell.x + direction.x === this.currentArea.size.x)
+		const down = Number(cell.y + direction.y === this.currentArea.size.y)
 
-		this.targetMarks = new Array(20)
-	
-		this.timerDuration = this.targetFrameRate
-		this.timer = this.moveCooldownDuration
-		this.turn = 0
+		if(!left && !top && !right && !down) return false
 
-		this.collisionMap = null
-	}
-	activateTargetMark(cell){		
-		this.targetMarks.forEach(mark => {
-			if(!mark.active){
-				mark.setCell(cell)
-				return 
-			}
-		})
-	}
-	changeStage(cell){
-		const actualX = canvas.stage.x
-		const actualY = canvas.stage.y
+		const xPositive = direction.x > 0
+		const xNegative = direction.x < 0
+		const yPositive = direction.y > 0
+		const yNegative = direction.y < 0
 
-		if(cell.x === -1){
-			const newStage = this.world.stages[actualY][actualX-1] 
-			if(newStage){
-				canvas.setStage(newStage)
-				return new Vector2D(canvas.size.x-1,cell.y)
-			}
-		}
-		if(cell.y === -1){
-			if(this.world.stages[actualY-1]){
-				const newStage = this.world.stages[actualY-1][actualX] 
-				if(newStage){
-					canvas.setStage(newStage)
-					return new Vector2D(cell.x,canvas.size.y-1)
-				}
-			}
-		}
-		if(cell.x === canvas.size.x){
-			const newStage = this.world.stages[actualY][actualX+1] 
-			if(newStage){
-				canvas.setStage(newStage)
-				return new Vector2D(0,cell.y)
-			}
-		}
-		if(cell.y === canvas.size.y){
-			if(this.world.stages[actualY+1]){
-				const newStage = this.world.stages[actualY+1][actualX] 
-				if(newStage){
-					canvas.setStage(newStage)
-					return new Vector2D(cell.x,0)
-				}
-			}
-		}
-	}
-	updateCollisionMap(){
-		if(!this.collisionMap){
-			this.collisionMap = []
-			for(let y = 0; y < canvas.stage.layers[0].tiles.length;y++){
-				this.collisionMap[y] = []
-				for(let x = 0; x < canvas.stage.layers[0].tiles[y].length;x++){
-					this.collisionMap[y][x] = true
-				}
-			}
-		}
-		else{
-			for(let y = 0; y < this.collisionMap.length;y++){
-			for(let x = 0; x < this.collisionMap[y].length;x++){
-				this.collisionMap[y][x] = true
-			}}
-		}
-		this.entities.forEach(entity => {
-			this.collisionMap[entity.cell.y][entity.cell.x] = false
-		})
-	}
-	manageTurns(){
-		if(this.turn === 0){
-			this.attackedTiles = []
-		}
-		for(let i = 0; i < this.entities.length;i++){
-			const entity = this.entities[this.turn]
+		const possibleDirection = new Vector2D(
+			xPositive ? direction.x * right : xNegative ? direction.x * left : 0,
+			yPositive ? direction.y * down : yNegative ? direction.y * top : 0,
+		)
 
-			if(entity.constructor.name === 'Player'){
-				if(this.timer > 0){
-					this.timer--
-					break
-				}
-				else if(entity.move()){
-					this.timer = this.timerDuration
-					this.passTurn()
-					game.updateCollisionMap()
-				}
-			}
-			else{
-				entity.move()
-				this.passTurn()
-				game.updateCollisionMap()
-			}
-		}
-	}
-	passTurn(){
-		this.turn++
-		if(this.turn >= this.entities.length){
-			this.turn = 0
-		}
-	}
-	isOccupied(cell){
-		return this.collisionMap[cell.y][cell.x]
+		const column = this.world.areas[this.currentArea.y + possibleDirection.y]
+		const newArea = column ? column[this.currentArea.x + possibleDirection.x] : null
+
+		if(!newArea) return false
+
+		const newCell = new Vector2D(
+			possibleDirection.x === 1 ? 0 : possibleDirection.x === -1 ? newArea.size.x-1 : cell.x + direction.x,
+			possibleDirection.y === 1 ? 0 : possibleDirection.y === -1 ? newArea.size.y-1 : cell.y + direction.y 
+		)
+
+		this.currentArea = newArea
+		return [newCell,newArea]
 	}
 	updateDeltaTime(){
 		const actualTime = performance.now()
@@ -156,59 +83,111 @@ class Game{
 			inventoryInteface.toggle()
 			input.keys.e = false
 		}
-		this.manageTurns()
+
+		let areaToTest = this.pausedArea ? new Vector2D(this.pausedArea.x,this.pausedArea.y) : new Vector2D
+
+		loop1: for(let y = areaToTest.y;y < this.world.areas.length;y++){
+		loop2: for(let x = areaToTest.x;x < this.world.areas[y].length;x++){
+			const area = this.world.areas[y][x]
+			if(area && !area.manageTurns()){
+				this.pausedArea = area
+				break loop1
+			}
+			else this.pausedArea = null
+		}}
 
 		canvas.renderer.clear()
-		canvas.drawTiles()
-		this.targetMarks.forEach(mark => {
-			if(mark.active){
-				if(mark.animate()) canvas.renderer.drawImage(mark)
-			}
+		this.currentArea.drawTiles()
+		this.currentArea.entities.forEach(entity => canvas.drawImage(entity))
+		this.currentArea.projectiles.forEach(projectile => {
+			projectile.animate()
+			canvas.drawImage(projectile)
 		})
-		this.entities.forEach(entity => canvas.renderer.drawImage(entity))
+
+		for(const effectGroup in this.currentArea.effects){
+			this.currentArea.effects[effectGroup].objects.forEach(effect => {
+				if(effect.active){
+					effect.animate()
+					effect.draw()
+				}
+			})
+		}
 		canvas.drawUI(this.userInterfaces)
 	}
 }
-window.loader = new Loader
 
+
+
+
+
+window.loader = new Loader
 loader.loadWorld([
 	'player.tsx',
 	'goblin.tsx',
 	'militia.tsx',
 	'targetMark.tsx',
+	'potato.tsx',
+	'goblinRanged.tsx',
+	'thrownRock.tsx'
 ])
 .then((result) => {
 	window.game = new Game
 
-	for(let i = 0; i < game.targetMarks.length;i++){
-		game.targetMarks[i] = new Entities.TargetMark
-	}
-
+	for(let y = 0; y < result[0].areas.length;y++){
+	for(let x = 0; x < result[0].areas[y].length;x++){
+		if(result[0].areas[y][x]){
+			result[0].areas[y][x] = new Area(result[0].areas[y][x])
+		}
+	}}
 	game.world = result[0]
+
 	window.canvas = new Canvas
 	window.input = new Input(canvas.renderer.c)
+	window.pathfinder = new Pathfinder
 
 	window.dialogBox = new DialogBox
 	window.inventoryInteface = new Inventory
 
-	window.pathfinder = new Pathfinder
-	
-	const currentStage = new Vector2D(2,0)
-	canvas.setStage(currentStage,result[1])
-	game.updateCollisionMap()
 
-	new Entities.Player(new Vector2D(7,2))
+	game.currentArea = game.world.areas[1][1]
 
-	for(let y = 0; y < 2;y++){
-	for(let x = 0; x < 10;x++){
-		new Entities.Goblin(new Vector2D(x,y))
+	new Entities.Player(5,7)
+
+	for(let y = 0; y < game.world.areas.length;y++){
+	for(let x = 0; x < game.world.areas[y].length;x++){
+		const area = game.world.areas[y][x]
+		if(area){
+			const quantity = randomInt(10,20)
+
+			for(let i = 0; i < quantity; i++){
+				const value = randomInt(0,3)
+				const randomX = randomInt(0,area.size.x-1)
+				const randomY = randomInt(0,area.size.y-1)
+
+				if(value === 0) new Entities.Goblin(randomX,randomY,area)
+				// if(value === 1) new Entities.GoblinRanged(randomX,randomY,area)
+				if(value === 2) new Items.Potato(randomX,randomY,area)
+				if(value === 3) new Entities.Militia(randomX,randomY,area)
+			}
+		}
 	}}
-	for(let y = 0; y < 2;y++){
-		new Entities.Militia(new Vector2D(12,y))
-	}
-	
-	game.updateCollisionMap()
 
 	game.running = true
 	game.tick()
 })
+
+
+
+
+
+/* A Fazer
+2. Terminar o Inventario:
+ - Os itens tem que ter o tamanho correto;
+ - Arrastar itens para trocar sua posisão;
+ - Alguma maneira de droppar itens.
+3. Ataques a distancia:
+ - Armas de projeteis, primitivas e modernas;
+ - Magias(?).
+ - Em area, linha reta, etc...
+4. Mapa(ou minimapa)
+*/

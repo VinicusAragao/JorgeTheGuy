@@ -17,8 +17,8 @@ export class UserInterface{
 		this.strokeWidth = config.strokeWidth ? config.strokeWidth : 1
 		this.image = config.image ? config.image : null
 
-		this.onHover = config.onHover ? config.onHover : null
-		this.onClick = config.onClick ? config.onClick : null
+		this.onHover = config.onHover ? config.onHover : () => {}
+		this.onClick = config.onClick ? config.onClick : () => {}
 		game.userInterfaces.push(this)
 	}
 	checkPointerEvents(point,clicked){
@@ -26,10 +26,11 @@ export class UserInterface{
 			child.checkPointerEvents(point,clicked)
 		})
 		if(this.isPointInside(point)){
-			if(this.onHover) this.onHover(true)
+			this.onHover(true)
+			this.onClick(clicked)
 			return true
 		}
-		if(this.onHover) this.onHover(false)
+		this.onHover(false)
 		return false
 	}
 	isPointInside(point){
@@ -77,6 +78,9 @@ export class Component{
 			this.width = Math.min(this.width,this.parent.width)
 			this.height = Math.min(this.height,this.parent.height)
 		}
+		else if(this.positionType === 'absolute'){
+			this.pos.add(this.parent.pos)
+		}
 
 		if(this.ratio){
 			this.width = this.width === 0 ? this.height * this.ratio : this.width
@@ -88,7 +92,14 @@ export class Component{
 		this.fill = config.fill ? config.fill : null
 		this.stroke = config.stroke ? config.stroke : null
 		this.strokeWidth = config.strokeWidth ? config.strokeWidth : 1
+
 		this.image = config.image ? config.image : null
+		this.imageDes = config.imageDes ? config.imageDes : new Vector2D 
+		this.imageDesSize = config.imageDesSize ? config.imageDesSize : new Vector2D(this.width,this.height)
+		this.imageSor = config.imageSor ? config.imageSor : new Vector2D
+
+		this.imageSorSize = this.image ? new Vector2D(this.image.width,this.image.height) : new Vector2D
+		this.imageSorSize = config.imageSorSize ? config.imageSorSize : this.imageSorSize
 
 		this.text = config.text ? config.text : null
 		this.font = "16px serif"
@@ -127,8 +138,8 @@ export class Component{
 			this.textPos = new Vector2D(this.pos)
 		}
 
-		this.onHover = config.onHover ? config.onHover : null
-		this.onClick = config.onClick ? config.onClick : null
+		this.onHover = config.onHover ? config.onHover : () => {}
+		this.onClick = config.onClick ? config.onClick : () => {}
 		this.hovered = false
 		this.clicked = false
 	}
@@ -139,21 +150,19 @@ export class Component{
 		&& point.y < this.pos.y + this.height
 	}
 	checkPointerEvents(point,clicked){
-		if(this.onHover || this.onClick){
-			if(this.isPointInside(point)){
-				if(this.onHover){
-					this.onHover(true)
-					this.hovered = true
-				}
-				if(this.onClick){
-					this.onClick(clicked)
-					this.clicked = !this.clicked
-				}
+		if(this.isPointInside(point)){
+			if(this.onHover){
+				this.onHover(true)
+				this.hovered = true
 			}
-			else if(this.onHover){
-				this.onHover(false)
-				this.hovered = false
+			if(this.onClick){
+				this.onClick(clicked)
+				this.clicked = this.clicked
 			}
+		}
+		else{
+			this.onHover(false)
+			this.hovered = false
 		}
 		this.children.forEach(child => {
 			child.checkPointerEvents(point,clicked)

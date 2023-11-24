@@ -1,12 +1,15 @@
 import {Vector2D,getManhatthanDistance,randomInt} from './geometry.js'
+import * as Projectiles from './projectiles.js'
 
 class BasicEntity{
-	constructor(cell,tileset){
-		this.cell = new Vector2D(cell)
+	constructor(x,y,tileset,area){
+		this.cell = new Vector2D(x,y)
 		this.tileset = tileset
 		this.image = this.tileset.image
 
-		this.tile = canvas.getTile(this.cell)
+		this.area = area ? area : game.currentArea
+
+		this.tile = this.area.getTile(this.cell)
 		this.des = this.tile.des
 		this.size = new Vector2D(this.tileset.tilewidth,this.tileset.tileheight)
 		
@@ -16,36 +19,53 @@ class BasicEntity{
 			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
 		)
 
+		this.walkingTileValue = 0
+		this.attackTileValue = 0
+		this.chargingTileValue = 0
+		this.cooldownTileValue = 0
+
 		this.faction = 'none'
 		this.alive = true
 		this.lifePoints = 0
 		this.damagePoints = 0
 		this.defensePoints = 0
 
+		this.chargingDuration = 0
+		this.chargingTimer = this.chargingDuration
+
 		this.attackCooldown = 0
 		this.attackCooldownDuration = 0
+		this.rangedAttackData = {tiles: [],hitsAlly: false}
 
 		this.interactingWith = null
 		this.interactionCount = 0
 		this.messageCount = 0
 
-		this.equipment = {}
-		this.inventory = {}
-
-		this.updateTile(cell)
-		game.entities.push(this)
+		this.updateTile(this.cell)
+		this.area.entities.push(this)
 	}
 	death(){
 		this.alive = false
 		this.tile.entity = null
-		game.entities.findAndRemove(this)
+		this.area.entities.findAndRemove(this)
 	}
 	deliverAttack(cell){
-		game.activateTargetMark(cell)
-		const entity = canvas.getTile(cell).entity
-		if(entity){
-			entity.calculateDamage(this.damagePoints)
-		}
+		this.area.getEffectObject('TargetMark',[this.area]).activate(cell)
+
+		const tile = this.area.getTile(cell)
+		const entity = tile.entity
+
+		let totalDamage = 0  
+		if(entity) totalDamage = entity.calculateDamage(this.damagePoints)
+
+		this.area.getEffectObject('DamageNumber').activate(
+			totalDamage,
+			Vector2D.add(tile.des,Vector2D.div(tile.size,2))
+		)
+		this.attackCooldown = this.attackCooldownDuration
+	}
+	deliverProjectileAttack(){
+		new Projectiles.Rock(this.area,this.rangedAttackData)
 		this.attackCooldown = this.attackCooldownDuration
 	}
 	calculateDamage(damage){
@@ -54,6 +74,7 @@ class BasicEntity{
 		if(this.lifePoints <= 0){
 			this.death()
 		}
+		return totalDamage
 	}
 	updateTilesetPosition(newValue){
 		this.tileValue = newValue
@@ -64,12 +85,12 @@ class BasicEntity{
 	}
 	updateTile(x,y){
 		const newCell = typeof x === 'object' ? x : Vector2D.add(this.cell, new Vector2D(x,y))
-		if(canvas.isValidCell(newCell) && game.isOccupied(newCell)){
+
+		if(this.area.isValidCell(newCell) && this.area.isOccupied(newCell)){
 			this.cell.set(newCell)
-			
-			const tile = canvas.getTile(this.cell)
+
 			this.tile.entity = null
-			this.tile = tile
+			this.tile = this.area.getTile(this.cell)
 			this.tile.entity = this
 			this.des = this.tile.des
 		} 
@@ -95,10 +116,30 @@ class BasicEntity{
 		this.messageCount = -1
 		dialogBox.deactivate()
 	}
+	moveToAnotherArea(newArea){
+		this.area.entities.findAndRemove(this)
+		this.area = newArea[1]
+		this.area.entities.push(this)
+		this.updateTile(newArea[0])
+	}
+	getRangedAttackData(){
+		this.rangedAttackData.hitsAlly = false
+		Object.assign(
+			this.rangedAttackData,
+			this.area.getTilesBetween(this.cell,this.target.cell)
+		)
+		this.rangedAttackData.tiles.forEach(tile => {
+			if(tile.entity && tile.entity.faction === this.faction){
+				this.rangedAttackData.hitsAlly = true
+				return
+			}
+		})
+		return this.rangedAttackData
+	}
 }
 export class Player extends BasicEntity{
-	constructor(cell){
-		super(cell,canvas.images.player)
+	constructor(x,y,area){
+		super(x,y,loader.images.player,area)
 		this.faction = 'human'
 
 		this.lifePoints = 5
@@ -107,12 +148,28 @@ export class Player extends BasicEntity{
 		this.attackRange = 1
 		this.attackCooldownDuration = 1
 	
+		this.inventory = []
 		game.player = this
+	}
+	pickupItem(){
+		const item = this.tile.items[0]
+		if(item){
+			this.inventory.push(item)
+			item.getPicked()
+			window.inventoryInteface.addItem(item)
+		}
 	}
 	move(){
 		if(input.keys[5]){
 			this.attackCooldown--
 			this.updateTilesetPosition(0)
+			return true
+		}
+		if(input.keys['Enter']){
+			this.pickupItem()
+			this.attackCooldown--
+			this.updateTilesetPosition(0)
+			input.keys['Enter'] = false
 			return true
 		}
 
@@ -145,43 +202,47 @@ export class Player extends BasicEntity{
 			this.attackCooldown--
 			return true
 		}
-		const newCell = Vector2D.add(this.cell,direction)
 
-		const mapChange = game.changeStage(newCell)
-		if(mapChange){
-			this.updateTile(mapChange)
+		const newCell = Vector2D.add(this.cell,direction)
+		const newArea = game.changeArea(this.cell,direction)
+
+		if(newArea){
+			this.moveToAnotherArea(newArea)
 			this.attackCooldown--
 			this.updateTilesetPosition(0)
 			return true
 		}
-		const entity = canvas.getTile(newCell).entity
-		if(entity){
-			if(this.faction !== entity.faction){
-				if(this.attackCooldown <= 0){
-					this.deliverAttack(newCell)
-					this.updateTilesetPosition(1)
+		else if(this.area.isValidCell(newCell)){
+			const entity = this.area.getTile(newCell).entity
+			if(entity){
+				if(this.faction !== entity.faction){
+					if(this.attackCooldown <= 0){
+						this.deliverAttack(newCell)
+						this.updateTilesetPosition(1)
+						return true
+					}
+					this.attackCooldown--
+					this.updateTilesetPosition(0)
 					return true
 				}
-				this.attackCooldown--
-				this.updateTilesetPosition(0)
-				return true
+				else{
+					entity.startInteraction(this)
+					this.attackCooldown--
+					this.updateTilesetPosition(0)
+					return true
+				}
 			}
-			else{
-				entity.startInteraction(this)
-				this.attackCooldown--
-				this.updateTilesetPosition(0)
-				return true
-			}
+			this.updateTile(newCell)
+			this.attackCooldown--
+			this.updateTilesetPosition(0)
+			return true
 		}
-		this.attackCooldown--
-		this.updateTilesetPosition(0)
-		this.updateTile(newCell)
-		return true
+		return false
 	}
 }
 class NPC extends BasicEntity{
-	constructor(cell,image){
-		super(cell,image)
+	constructor(x,y,image,area){
+		super(x,y,image,area)
 		this.engagingMode = 'passive'
 		this.attackType = 'singleCardinal'
 
@@ -195,21 +256,24 @@ class NPC extends BasicEntity{
 		this.target = {
 			entity: null,
 			distance: Infinity,
-			path: {length: Infinity}
+			path: {length: Infinity},
+			cell: new Vector2D
 		}
-		game.entities.forEach(entity => {
+		this.area.entities.forEach(entity => {
 			if(entity.faction !== this.faction){
-				game.collisionMap[entity.cell.y][entity.cell.x] = true
-				const path = pathfinder.getPath(this.cell,entity.cell,game.collisionMap)
+				this.area.collisionMap[entity.cell.y][entity.cell.x] = true
+				const path = pathfinder.getPath(this.cell,entity.cell,this.area.collisionMap)
 
 				if(path.length + path[0].h < this.target.path.length + this.target.distance){
 					this.target.entity = entity
 					this.target.distance = path[0].h
 					this.target.path = path
+					this.target.cell = entity.cell
 				}
-				game.collisionMap[entity.cell.y][entity.cell.x] = false
+				this.area.collisionMap[entity.cell.y][entity.cell.x] = false
 			}
 		})
+		return this.target.entity
 	}
 	move(){
 		if(this.interactingWith){
@@ -217,33 +281,47 @@ class NPC extends BasicEntity{
 			this.attackCooldown--
 			return
 		}
-		this.findTarget()
-		if(!this.target.entity){
-			this.updateTile(randomInt(-1,1),randomInt(-1,1))
-			this.updateTilesetPosition(0)
+
+		if(this.attackCooldown > 0){
 			this.attackCooldown--
+			this.updateTilesetPosition(this.cooldownTileValue)
+			return
+		}
+		if(!this.findTarget()){
+			this.updateTile(randomInt(-1,1),randomInt(-1,1))
+			this.updateTilesetPosition(this.walkingTileValue)
 			return
 		}
 
 		if(this.attackType === 'singleCardinal'){
-			if((this.cell.x === this.target.entity.cell.x || this.cell.y === this.target.entity.cell.y)
-			&& this.target.distance <= this.attackRange && this.attackCooldown <= 0){
-				this.deliverAttack(this.target.entity.cell)
-				this.updateTilesetPosition(1)
-			}
-			else{
-				this.updateTilesetPosition(0)
-				if(this.attackCooldown > 0){
-					this.attackCooldown--
-				}
-				else this.updateTile(this.target.path[1])
+			if((this.cell.x === this.target.cell.x || this.cell.y === this.target.cell.y)
+			&& this.target.distance <= this.attackRange){
+				this.deliverAttack(this.target.cell)
+				this.updateTilesetPosition(this.attackTileValue)
+				return
 			}
 		}
+		if(this.attackType === 'rangedCardinal'){
+			if(this.chargingTimer > 0){
+				this.chargingTimer--
+				this.deliverProjectileAttack()
+				this.updateTilesetPosition(this.attackTileValue)
+				return				
+			}
+			else if((this.cell.x === this.target.cell.x || this.cell.y === this.target.cell.y)
+			&& this.target.distance <= this.attackRange && !this.getRangedAttackData().hitsAlly){
+				this.chargingTimer = this.chargingDuration
+				this.updateTilesetPosition(this.chargingTileValue)				
+				return
+			}
+		}
+
+		this.updateTile(this.target.path[1])
 	}
 }
 export class Goblin extends NPC{
-	constructor(cell){
-		super(cell,canvas.images.goblin)
+	constructor(x,y,area){
+		super(x,y,loader.images.goblin,area)
 		this.faction = 'monster'
 		this.attackType = 'singleCardinal'
 
@@ -251,12 +329,33 @@ export class Goblin extends NPC{
 		this.damagePoints = 1
 		this.defensePoints = 0
 		this.attackRange = 1
-		this.attackCooldownDuration = 2
+		this.attackCooldownDuration = 1
+
+		this.attackTileValue = 1
+	}
+}
+export class GoblinRanged extends NPC{
+	constructor(x,y,area){
+		super(x,y,loader.images.goblinRanged,area)
+		this.faction = 'monster'
+		this.attackType = 'rangedCardinal'
+
+		this.lifePoints = 1
+		this.damagePoints = 0.5
+		this.defensePoints = 0
+		this.attackRange = 3
+		this.attackCooldownDuration = 1
+
+		this.chargingDuration = 1
+		this.chargingTimer = 0
+
+		this.chargingTileValue = 1
+		this.attackTileValue = 2
 	}
 }
 export class Militia extends NPC{
-	constructor(cell){
-		super(cell,canvas.images.militia)
+	constructor(x,y,area){
+		super(x,y,loader.images.militia,area)
 		this.faction = 'human'
 		this.attackType = 'singleCardinal'
 
@@ -265,55 +364,7 @@ export class Militia extends NPC{
 		this.defensePoints = 0.5
 		this.attackRange = 2
 		this.attackCooldownDuration = 2
-	}
-}
-
-export class TargetMark{
-	constructor(){
-		this.tileset = loader.images.targetMark
-		this.image = this.tileset.image
-		this.tile = null
-
-		this.tileValue = 0
-		this.active = false
-
-		this.cell = new Vector2D
-		this.des = new Vector2D
-		this.sor = new Vector2D
-		this.size = new Vector2D
-
-		this.animationDuration = game.targetFrameRate / 10
-		this.animationTimer = this.animationDuration
-	}
-	animate(){
-		if(this.animationTimer <= 0){
-			this.tileValue++
-			if(this.tileValue >= this.tileset.tilecount){
-				this.active = false
-				return false
-			}
-			this.updateTilesetPosition(this.tileValue)
-			this.animationTimer = this.animationDuration
-			return true
-		}
-		this.animationTimer--
-		return true
-	}
-	setCell(cell){
-		this.active = true
-		
-		this.cell.set(cell)
-		this.tile = canvas.getTile(this.cell)
-		this.des.set(this.tile.des)
-		this.size.set(this.tileset.tilewidth,this.tileset.tileheight)
-
-		this.updateTilesetPosition(0)
-	}
-	updateTilesetPosition(newValue){
-		this.tileValue = newValue
-		this.sor.set(
-			this.size.x * (this.tileValue % this.tileset.columns),
-			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
-		)
+	
+		this.attackTileValue = 1
 	}
 }

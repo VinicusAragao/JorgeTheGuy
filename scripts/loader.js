@@ -96,11 +96,11 @@ export class Loader{
 						Math.abs(mapSize.up) + Math.abs(mapSize.down) + 1
 					)
 
-					this.world.stages = []
+					this.world.areas = []
 					for(let y = 0; y < mapSize.totalSize.y; y++){
-						this.world.stages.push([])
+						this.world.areas.push([])
 						for(let x = 0; x < mapSize.totalSize.x; x++){
-							this.world.stages[y][x] = null
+							this.world.areas[y][x] = null
 						}
 					}
 					for(let i = 0; i < result.length-1;i++){
@@ -108,7 +108,7 @@ export class Loader{
 						area.x -= mapSize.left
 						area.y -= mapSize.up
 
-						this.world.stages[area.y][area.x] = area
+						this.world.areas[area.y][area.x] = area
 					}
 					resolve([this.world,this.images])
 				})
@@ -150,7 +150,7 @@ export class Loader{
 				}
 				this.getImageFromXML(doc)
 				.then(result => {	
-					Object.assign(layer,result)	
+					Object.assign(layer,result)
 					resolve(layer)
 				})
 			})

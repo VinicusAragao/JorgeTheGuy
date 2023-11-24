@@ -171,7 +171,9 @@ export class Vector2D{
 				this.x /= arg
 				this.y /= arg
 			}
-		}
+			this.x = isNaN(this.x) ? 0 : this.x
+			this.y = isNaN(this.y) ? 0 : this.y 
+		} 
 	}
 	normalize(){
 		const length = this.length()

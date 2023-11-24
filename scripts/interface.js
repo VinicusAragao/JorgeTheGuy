@@ -1,4 +1,5 @@
 import {UserInterface,Component} from './components.js'
+import {Vector2D} from './geometry.js'
 
 export class DialogBox extends UserInterface{
 	constructor(){
@@ -77,34 +78,7 @@ export class Inventory extends UserInterface{
 			strokeWidth: 2,
 			opacity: 0,
 		})
-		const rows = 12
-		const cols = 12
-		const squareSize = 30
-		const inventorySquares = new Component({
-			pos: [5,5],
-			width: squareSize * cols + cols,
-			height: squareSize * rows + rows,
-			stroke: '#000'
-		},this)
-		for(let y = 0; y < rows;y++){
-		for(let x = 0; x < cols;x++){
-			new Component({
-				pos: [squareSize * x + x,squareSize * y + y],
-				width: squareSize,
-				ratio: 1/1,
-				stroke: '#000',
-				fill: '#222',
-				onHover: function (bool){
-					if(bool){
-						this.fill = '#999'
-					}
-					else{
-						this.fill = '#222'
-					}
-				}
-			},inventorySquares)
-		}}
-		this.items = []
+		this.pannel = new InventoryPannel(this)
 		this.active = false
 	}
 	toggle(){
@@ -118,5 +92,114 @@ export class Inventory extends UserInterface{
 	deactivate(){
 		this.opacity = 0
 		this.active = false
+	}
+	addItem(item){
+		this.pannel.addItem(item)
+	}
+}
+class InventoryPannel extends Component{
+	constructor(parent){
+		const rows = 12
+		const cols = 12
+		const squareSize = 30
+
+		const width = squareSize * cols
+		const height = squareSize * rows
+		super({
+			pos: [5,parent.height/2 - height/2],
+			width: width,
+			height: height,
+			stroke: '#000'
+		},parent)
+
+		this.rows = rows
+		this.cols = cols
+		this.cells = []
+		
+		for(let y = 0; y < rows;y++){
+			this.cells.push([])
+			for(let x = 0; x < cols;x++){
+				this.cells[y].push(new InventoryCell(x,y,this))
+			}
+		}
+	}
+	addItem(item){
+		const itemSize = item.inventory.cellSize
+		for(let y = 0; y < this.cells.length; y++){
+			for(let x = 0; x < this.cells[y].length; x++){
+				const initialCell = new Vector2D(x,y)
+				const occupiedCells = this.itemCanFit(initialCell,itemSize)
+				if(occupiedCells){
+					occupiedCells.forEach(cell => {
+						cell.setItem(
+							item,Vector2D.sub(cell.cell,initialCell)
+						)
+					})
+					item.cells = occupiedCells
+					return
+				}
+			}
+		}
+	}
+	itemCanFit(cell,size){
+		const cells = []
+		for(let y = 0; y <= size.y; y++){
+			for(let x = 0; x <= size.x; x++){
+				const testedCell = this.cells[cell.y+y][cell.x+x]
+
+				if(testedCell.item){
+					return false
+				}
+				cells.push(testedCell)
+			}
+		}
+		return cells
+	}
+}
+class InventoryCell extends Component{
+	constructor(x,y,parent){
+		const squareSize = 30
+		super({
+			pos: [squareSize * x,squareSize * y],
+			width: squareSize,
+			ratio: 1/1,
+			stroke: '#000',
+			fill: '#222',
+			onHover: function(bool){
+				if(this.item && bool){
+					this.fill = '#999'
+					this.item.cells.forEach(cell => {
+						cell.fill = '#999'
+					})	
+					return
+				}
+				this.fill = '#222'
+
+			}
+		},parent)
+		this.cell = new Vector2D(x,y)
+		this.item = null
+	}
+	setItem(item,cellPos){
+		this.children = []
+
+		const cellSize = Vector2D.add(item.inventory.cellSize,1)
+		const imageCellSize = new Vector2D(
+			item.image.width / cellSize.x,
+			item.image.height / cellSize.y
+		)
+
+		new Component({
+			width: this.width,
+			height: this.height,
+			image: item.image,
+			imageDesSize: new Vector2D(item.image.width,item.image.height),
+			imageSor: Vector2D.mult(imageCellSize,cellPos),
+			imageSorSize: imageCellSize,
+			positionType: 'absolute',
+		},this)
+
+		this.stroke = null
+		this.item = item
 	}
 }

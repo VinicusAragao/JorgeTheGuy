@@ -62,6 +62,13 @@
             "width": 640,
             "x": 640,
             "y": 704
+        },
+        {
+            "fileName": "house.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": -352
         }
     ],
     "onlyShowAdjacentMaps": false,
