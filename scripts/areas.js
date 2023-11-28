@@ -6,7 +6,7 @@ export class Area{
 		Object.assign(this,areaFile)
 
 		this.turn = 0
-		this.timerDuration = game.targetFrameRate
+		this.timerDuration = game.targetFrameRate / 2
 		this.timer = this.timerDuration
 
 		this.entities = []
@@ -82,8 +82,13 @@ export class Area{
 		return unactiveEffect
 	}
 	manageTurns(){
-		for(let i = 0; i < this.entities.length; i++){
-			const entity = this.entities[this.turn]
+		this.projectiles.forEach(projectile => projectile.checkHit())
+		for(let i = 0; i < this.entities.length;i++){
+			let entity = this.entities[this.turn]
+			if(!entity){
+				this.turn = this.entities.length-1
+				entity = this.entities[this.turn]
+			}
 			if(entity.constructor.name === 'Player'){
 				if(this.timer > 0){
 					this.timer--
@@ -104,7 +109,6 @@ export class Area{
 			}
 		}
 
-		this.projectiles.forEach(projectile => projectile.checkHit()) 
 		return true
 	}
 	passTurn(){
@@ -140,8 +144,6 @@ export class Area{
 		while(true){
 			currentCell.x += currentCell.x !== end.x ? direction.x : 0
 			currentCell.y += currentCell.y !== end.y ? direction.y : 0
-
-			tiles.push(this.getTile(currentCell))
 			
 			if(currentCell.x === end.x && currentCell.y === end.y){
 				return {
@@ -150,6 +152,7 @@ export class Area{
 					distance: distance	
 				}
 			}
+			tiles.push(this.getTile(currentCell))
 		} 
 	}
 	updateCollisionMap(){

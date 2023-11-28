@@ -113,13 +113,14 @@ export class Pathfinder{
 					if(child === node){
 						isInOpen = true
 						if(child.g < node.g) open[index] = child
+						return
 					}
 				})
 				if(!isInOpen) open.push(child)
 			}
 		}
 
-		let current = {h:Infinity}
+		let current = {h:Infinity}		
 		for(let y = 0; y < this.nodes.length;y++){
 		for(let x = 0; x < this.nodes[y].length;x++){
 			const node = this.nodes[y][x]

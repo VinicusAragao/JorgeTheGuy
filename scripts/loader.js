@@ -3,11 +3,25 @@ import {Vector2D} from './geometry.js'
 export class Loader{
 	constructor(){
 		this.images = {}
+		this.audio = {}
 		this.world = []
+	}
+	loadAudio(audioSrc){
+		return Promise.all(
+			audioSrc.map(src => new Promise(resolve => {
+				const audio = new Audio('./audio/'+src)
+				audio.addEventListener('canplay', () => {
+					this.audio[src.slice(0,src.length-4)] = audio
+					resolve(audio)
+				})
+			}))
+		).then(result => {
+			return result
+		})
 	}
 	loadExtraImages(imagesSrc){
 		return Promise.all(imagesSrc.map(src => new Promise(resolve => {
-			if(this.images[imagesSrc]){
+			if(this.images[src]){
 				resolve()
 			}
 			this.loadXML(src).then(doc => {
@@ -61,7 +75,7 @@ export class Loader{
 			})	
 		})
 	}
-	loadWorld(imagesSrc){
+	loadWorld(imagesSrc,audioSrc){
 		this.images = {}
 
 		return new Promise(resolve => {
@@ -70,6 +84,7 @@ export class Loader{
 				this.world = world
 				const promises = this.world.maps.map(map => this.getArea(map.fileName,map))
 				promises.push(this.loadExtraImages(imagesSrc))
+				promises.push(this.loadAudio(audioSrc))
 				
 				Promise.all(promises).then(result => {
 					const mapSize = {
@@ -95,7 +110,6 @@ export class Loader{
 						Math.abs(mapSize.left) + Math.abs(mapSize.right) + 1,
 						Math.abs(mapSize.up) + Math.abs(mapSize.down) + 1
 					)
-
 					this.world.areas = []
 					for(let y = 0; y < mapSize.totalSize.y; y++){
 						this.world.areas.push([])
@@ -103,14 +117,14 @@ export class Loader{
 							this.world.areas[y][x] = null
 						}
 					}
-					for(let i = 0; i < result.length-1;i++){
+					for(let i = 0; i < result.length-2;i++){
 						const area = result[i]
 						area.x -= mapSize.left
 						area.y -= mapSize.up
 
 						this.world.areas[area.y][area.x] = area
 					}
-					resolve([this.world,this.images])
+					resolve([this.world,this.images,this.audio])
 				})
 			})
 		})

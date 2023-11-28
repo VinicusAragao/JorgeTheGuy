@@ -2,33 +2,23 @@ import {Vector2D} from './geometry.js'
 
 export class Canvas{
 	constructor(){
-		this.renderer = new Renderer('#f00')
-
-		this.width = game.resolution.x
-		this.height = game.resolution.y
-		this.renderer.updateSize(this.width,this.height)
-		this.renderer.zoom = 2
-
-		this.stage = null
-		this.size = new Vector2D
-	}
-	drawImage(img){
-		this.renderer.drawImage(img)
-	}
-	drawUI(UIs){
-		UIs.forEach(UI => this.renderer.drawInterface(UI))
-	}
-}
-class Renderer{
-	constructor(background){
 		this.c = document.querySelector('canvas')
 		this.ctx = this.c.getContext('2d')
 
-		this.fill = background
+		this.updateSize(game.resolution.x,game.resolution.y)
+
+		this.zoom = 2
 		this.alias = false
-		
-		this.zoom = 1
+		this.fill = '#f00'
+
 		this.c.addEventListener('contextmenu', e => e.preventDefault())
+	}
+	changeCursor(cursor){
+		if(cursor){
+			this.c.style.cursor = 'cursor'
+			return
+		}
+		this.c.style.cursor = 'default'
 	}
 	updateSize(width,height){
 		this.width = width
@@ -70,6 +60,20 @@ class Renderer{
 			this.ctx.stroke()
 		}
 	}
+	drawRect(rect){
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,0,0)
+
+		if(rect.fill){
+			this.ctx.fillStyle = rect.fill
+			this.ctx.fillRect(rect.pos.x,rect.pos.y,rect.w,rect.h)
+		}
+		if(rect.stroke){
+			this.ctx.strokeStyle = rect.stroke
+			this.ctx.lineWidth = rect.strokeWidth ? rect.strokeWidth : 1
+			this.ctx.strokeRect(rect.pos.x,rect.pos.y,rect.w,rect.h)
+		}
+		this.ctx.resetTransform()
+	}
 	drawRotatedRect(rect){
 		this.ctx.globalAlpha = rect.opacity ? rect.opacity : 1
 		this.ctx.setTransform(this.zoom,0,0,this.zoom,rect.center.x,rect.center.y)
@@ -103,17 +107,6 @@ class Renderer{
 		}
 		this.ctx.resetTransform()
 	}	
-	drawRect(rect){	
-		if(rect.fill){
-			this.ctx.fillStyle = rect.fill
-			this.ctx.fillRect(rect.pos.x,rect.pos.y,rect.w,rect.h)
-		}
-		if(rect.stroke){
-			this.ctx.strokeStyle = rect.stroke
-			this.ctx.lineWidth = rect.strokeWidth ? rect.strokeWidth : 1
-			this.ctx.strokeRect(rect.pos.x,rect.pos.y,rect.w,rect.h)
-		}
-	}
 	drawPoints(points){
 		for(const point of points){
 			this.ctx.beginPath()
@@ -121,6 +114,9 @@ class Renderer{
 			this.ctx.fillStyle = '#00f'
 			this.ctx.fill()
 		}
+	}
+	drawUI(UIs){
+		UIs.forEach(UI => this.drawInterface(UI))
 	}
 	drawInterface(UI){
 		if(!UI.visible || UI.opacity === 0) return

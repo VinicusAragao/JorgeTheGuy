@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "area1.json",
+    "activeFile": "area5.json",
     "expandedProjectPaths": [
         "."
     ],
@@ -18,75 +18,75 @@
             }
         },
         "area1.json": {
-            "scale": 0.25,
-            "selectedLayer": -1,
+            "scale": 0.33,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 250,
-                "y": 170
+                "x": 31.81818181818187,
+                "y": 634.8484848484849
             }
         },
         "area2.json": {
-            "scale": 0.125,
-            "selectedLayer": -1,
+            "scale": 0.33,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 316,
-                "y": 172
+                "x": -501.5151515151515,
+                "y": 746.969696969697
             }
         },
         "area3.json": {
-            "scale": 0.25,
-            "selectedLayer": -1,
+            "scale": 0.33,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1034,
-                "y": 574
+                "x": 674.2424242424242,
+                "y": 637.8787878787879
             }
         },
         "area4.json": {
             "scale": 0.25,
-            "selectedLayer": -1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 246,
+                "x": 714,
                 "y": -186
             }
         },
         "area5.json": {
             "scale": 0.25,
-            "selectedLayer": -1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1034,
-                "y": 222
+                "x": 422,
+                "y": 330
             }
         },
         "area6.json": {
-            "scale": 0.33,
-            "selectedLayer": -1,
+            "scale": 0.5,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.69696969696975,
-                "y": 174.24242424242425
+                "x": -821,
+                "y": -25
             }
         },
         "area7.json": {
             "scale": 0.33,
-            "selectedLayer": -1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.69696969696975,
-                "y": 174.24242424242425
+                "x": 677.2727272727273,
+                "y": -65.15151515151513
             }
         },
         "area8.json": {
             "scale": 0.33,
-            "selectedLayer": -1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.69696969696975,
-                "y": 174.24242424242425
+                "x": 404.5454545454546,
+                "y": -62.121212121212125
             }
         },
         "area9.json": {
-            "scale": 0.33,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 321.21212121212113,
-                "y": 177.27272727272725
+                "x": 226,
+                "y": -366
             }
         },
         "goblin.tsx": {
@@ -178,30 +178,31 @@
     "mapScene.enableWorlds": true,
     "openFiles": [
         "area1.json",
+        "area4.json",
         "area2.json",
         "area3.json",
+        "area5.json",
         "area6.json",
         "area7.json",
         "area8.json",
         "area9.json",
-        "area4.json",
-        "area5.json"
+        "groundTileset.tsx"
     ],
     "project": "sideThing.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "thrownRock.tsx",
-        "goblinRanged.tsx",
-        "house.json",
-        "house.tsx",
         "area1.json",
         "area4.json",
-        "area5.json",
+        "area2.json",
         "area3.json",
+        "groundTileset.tsx",
         "area9.json",
         "area8.json",
         "area7.json",
-        "area6.json"
+        "area6.json",
+        "area5.json",
+        "targetMark.tsx",
+        "thrownRock.tsx"
     ],
     "tileset.lastUsedFormat": "tsx"
 }

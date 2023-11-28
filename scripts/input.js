@@ -11,16 +11,16 @@ export class Input{
 		target.addEventListener('pointerdown',(e)=>{
 			this.getPointer(e)
 			this.mouse[e.button] = true
-			this.checkUserInteraction()
+			this.checkUserInteraction(e)
 		})
 		target.addEventListener('pointermove',(e)=>{
 			this.getPointer(e)
-			this.checkUserInteraction()
+			this.checkUserInteraction(e)
 		})
 		target.addEventListener('pointerup',(e)=>{
 			this.getPointer(e)
 			this.mouse[e.button] = false
-			this.checkUserInteraction()
+			this.checkUserInteraction(e)
 		})
 		window.addEventListener('keydown',(e)=>{
 			this.getKey(e)
@@ -40,10 +40,10 @@ export class Input{
 		this.recentkeys.push(e.key)
 		this.keys[e.key] = e.type === 'keydown'
 	}
-	checkUserInteraction(){
+	checkUserInteraction(e){
 		let interactedWithInterface = false
 		game.userInterfaces.forEach(userInterface => {
-			if(userInterface.checkPointerEvents(this.pointer,this.mouse[0]))
+			if(userInterface.checkPointerEvents(this.pointer,e))
 				interactedWithInterface = true
 		})
 	}

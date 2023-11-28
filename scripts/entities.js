@@ -19,14 +19,18 @@ class BasicEntity{
 			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
 		)
 
+		this.faction = 'none'
+		this.alive = true
+		this.lifeBars = []
+
+		this.updateTile(this.cell)
+
 		this.walkingTileValue = 0
 		this.attackTileValue = 0
 		this.chargingTileValue = 0
 		this.cooldownTileValue = 0
 
-		this.faction = 'none'
-		this.alive = true
-		this.lifePoints = 0
+		this.setLifePoints(0)
 		this.damagePoints = 0
 		this.defensePoints = 0
 
@@ -41,8 +45,20 @@ class BasicEntity{
 		this.interactionCount = 0
 		this.messageCount = 0
 
-		this.updateTile(this.cell)
 		this.area.entities.push(this)
+	}
+	updateBars(){
+		this.lifeBars.forEach(bar => bar.update())
+	}
+	setLifePoints(points){
+		this.maxLifePoints = points
+		this.lifePoints = this.maxLifePoints
+		this.lifeBars = []
+
+		for(let i = 0; i < points;i++){
+			this.lifeBars.push(new LifeBar(this))
+		}
+		this.updateBars()
 	}
 	death(){
 		this.alive = false
@@ -55,8 +71,7 @@ class BasicEntity{
 		const tile = this.area.getTile(cell)
 		const entity = tile.entity
 
-		let totalDamage = 0  
-		if(entity) totalDamage = entity.calculateDamage(this.damagePoints)
+		let totalDamage = entity ? entity.calculateDamage(this.damagePoints) : 0
 
 		this.area.getEffectObject('DamageNumber').activate(
 			totalDamage,
@@ -70,10 +85,11 @@ class BasicEntity{
 	}
 	calculateDamage(damage){
 		const totalDamage = Math.max(damage - this.defensePoints,0)
+		
 		this.lifePoints -= totalDamage
-		if(this.lifePoints <= 0){
-			this.death()
-		}
+		if(this.lifePoints <= 0) this.death()
+
+		this.updateBars()		
 		return totalDamage
 	}
 	updateTilesetPosition(newValue){
@@ -93,6 +109,8 @@ class BasicEntity{
 			this.tile = this.area.getTile(this.cell)
 			this.tile.entity = this
 			this.des = this.tile.des
+
+			this.updateBars()
 		} 
 	}
 	startInteraction(entity){
@@ -128,8 +146,11 @@ class BasicEntity{
 			this.rangedAttackData,
 			this.area.getTilesBetween(this.cell,this.target.cell)
 		)
+		this.rangedAttackData.tiles.unshift(this.tile)
+		this.rangedAttackData.tiles.push(this.target.entity.tile)
+
 		this.rangedAttackData.tiles.forEach(tile => {
-			if(tile.entity && tile.entity.faction === this.faction){
+			if(tile.entity && tile.entity.faction === this.faction && this !== tile.entity){
 				this.rangedAttackData.hitsAlly = true
 				return
 			}
@@ -142,7 +163,8 @@ export class Player extends BasicEntity{
 		super(x,y,loader.images.player,area)
 		this.faction = 'human'
 
-		this.lifePoints = 5
+		this.setLifePoints(5)
+
 		this.damagePoints = 1
 		this.defensePoints = 0
 		this.attackRange = 1
@@ -150,6 +172,12 @@ export class Player extends BasicEntity{
 	
 		this.inventory = []
 		game.player = this
+	}
+	death(){
+		this.alive = false
+		this.tile.entity = null
+		this.area.entities.findAndRemove(this)
+		game.running = false
 	}
 	pickupItem(){
 		const item = this.tile.items[0]
@@ -325,7 +353,8 @@ export class Goblin extends NPC{
 		this.faction = 'monster'
 		this.attackType = 'singleCardinal'
 
-		this.lifePoints = 1
+		this.setLifePoints(1)
+
 		this.damagePoints = 1
 		this.defensePoints = 0
 		this.attackRange = 1
@@ -340,10 +369,11 @@ export class GoblinRanged extends NPC{
 		this.faction = 'monster'
 		this.attackType = 'rangedCardinal'
 
-		this.lifePoints = 1
+		this.setLifePoints(1)
+
 		this.damagePoints = 0.5
 		this.defensePoints = 0
-		this.attackRange = 3
+		this.attackRange = 5
 		this.attackCooldownDuration = 1
 
 		this.chargingDuration = 1
@@ -359,12 +389,46 @@ export class Militia extends NPC{
 		this.faction = 'human'
 		this.attackType = 'singleCardinal'
 
-		this.lifePoints = 5
+		this.setLifePoints(3)
+
 		this.damagePoints = 2
 		this.defensePoints = 0.5
 		this.attackRange = 2
 		this.attackCooldownDuration = 2
 	
 		this.attackTileValue = 1
+	}
+}
+class LifeBar{
+	constructor(entity){
+		this.entity = entity
+		this.fill = '#f00'
+		this.stroke = '#000'
+		this.strokeWidth = 0.5
+
+		this.pos = new Vector2D
+		this.id = this.entity.lifeBars.length
+
+		this.w = 0
+		this.h = 0
+		this.extraMargin = new Vector2D(0,2.5)
+
+		this.update()
+		this.active = true
+	}
+	update(){
+		this.maxW = this.entity.tile.size.x - this.entity.lifeBars.length
+		this.w = Math.min(this.maxW / this.entity.lifeBars.length,this.maxW)
+		this.h = 2
+
+		this.pos.set(this.entity.des)
+		this.pos.add(this.w * this.id + this.id,0)
+		this.pos.add(this.extraMargin)
+		
+		this.toggle(this.entity.lifePoints > this.id) 
+	}
+	toggle(activate){
+		this.active = activate
+		this.fill = this.active ? '#f00' : '#600'
 	}
 }

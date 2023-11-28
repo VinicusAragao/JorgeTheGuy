@@ -38,20 +38,22 @@ class BasicProjectile{
 		this.area.projectiles.findAndRemove(this)
 	}
 	checkHit(){
+		this.changeCell(Vector2D.add(this.cell,this.direction))
 		if(this.tile.entity){
 			this.area.getEffectObject('TargetMark',[this.area]).activate(this.cell)
 			this.area.getEffectObject('DamageNumber').activate(
 				this.tile.entity.calculateDamage(this.damage),
 				Vector2D.add(this.tile.des,Vector2D.div(this.tile.size,2))
 			)
+			audioPlayer.playAudio('throwHit')
 			this.death()
+			return
 		}
-		this.changeCell(Vector2D.add(this.cell,this.direction))
 	}
 	changeCell(cell){
 		if(this.area.isValidCell(cell)){
 			this.tile = this.area.getTile(cell)
-			this.des.set(this.tile.des)
+			this.des = new Vector2D(this.tile.des)
 			this.cell.set(cell)
 			this.traveledDistance++	
 		}

@@ -4,6 +4,7 @@ import {Loader} from './scripts/loader.js'
 import {Vector2D,randomInt} from './scripts/geometry.js'
 import {Pathfinder} from './scripts/pathfinding.js'
 import {Area} from './scripts/areas.js'
+import {AudioPlayer,AudioTrack} from './scripts/audioPlayer.js'
 import {
 	DialogBox,
 	Inventory
@@ -96,13 +97,14 @@ class Game{
 			else this.pausedArea = null
 		}}
 
-		canvas.renderer.clear()
+		canvas.clear()
 		this.currentArea.drawTiles()
 		this.currentArea.entities.forEach(entity => canvas.drawImage(entity))
 		this.currentArea.projectiles.forEach(projectile => {
 			projectile.animate()
 			canvas.drawImage(projectile)
 		})
+		this.currentArea.entities.forEach(entity => entity.lifeBars.forEach(bar => canvas.drawRect(bar)))
 
 		for(const effectGroup in this.currentArea.effects){
 			this.currentArea.effects[effectGroup].objects.forEach(effect => {
@@ -129,6 +131,10 @@ loader.loadWorld([
 	'potato.tsx',
 	'goblinRanged.tsx',
 	'thrownRock.tsx'
+],[
+	'example1.wav',	
+	'throw.mp3',	
+	'throwHit.mp3',	
 ])
 .then((result) => {
 	window.game = new Game
@@ -142,12 +148,12 @@ loader.loadWorld([
 	game.world = result[0]
 
 	window.canvas = new Canvas
-	window.input = new Input(canvas.renderer.c)
+	window.input = new Input(canvas.c)
 	window.pathfinder = new Pathfinder
+	window.audioPlayer = new AudioPlayer(result[2])
 
 	window.dialogBox = new DialogBox
 	window.inventoryInteface = new Inventory
-
 
 	game.currentArea = game.world.areas[1][1]
 
@@ -157,21 +163,21 @@ loader.loadWorld([
 	for(let x = 0; x < game.world.areas[y].length;x++){
 		const area = game.world.areas[y][x]
 		if(area){
-			const quantity = randomInt(10,20)
+			const quantity = randomInt(0,10)
 
 			for(let i = 0; i < quantity; i++){
-				const value = randomInt(0,3)
+				const value = randomInt(0,10)
 				const randomX = randomInt(0,area.size.x-1)
 				const randomY = randomInt(0,area.size.y-1)
 
-				if(value === 0) new Entities.Goblin(randomX,randomY,area)
-				// if(value === 1) new Entities.GoblinRanged(randomX,randomY,area)
-				if(value === 2) new Items.Potato(randomX,randomY,area)
-				if(value === 3) new Entities.Militia(randomX,randomY,area)
+				// new Items.Potato(randomX,randomY,area)
+				if(value < 6) new Entities.Goblin(randomX,randomY,area)
+				if(value > 6) new Entities.GoblinRanged(randomX,randomY,area)
+				if(value === 6) new Entities.Militia(randomX,randomY,area)
 			}
 		}
 	}}
-
+	
 	game.running = true
 	game.tick()
 })
@@ -186,7 +192,7 @@ loader.loadWorld([
  - Arrastar itens para trocar sua posisão;
  - Alguma maneira de droppar itens.
 3. Ataques a distancia:
- - Armas de projeteis, primitivas e modernas;
+ - Armas de projeteis modernas;
  - Magias(?).
  - Em area, linha reta, etc...
 4. Mapa(ou minimapa)

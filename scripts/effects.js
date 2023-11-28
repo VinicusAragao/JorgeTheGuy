@@ -52,10 +52,10 @@ export class DamageNumber extends BasicEffect{
 	}
 	animation(){
 		this.des.add(0,-1)
-		if(this.frameCount >= 10) this.deactivate()
+		if(this.frameCount >= 5) this.deactivate()
 	}
 	draw(){
-		canvas.renderer.drawText(this)
+		canvas.drawText(this)
 	}
 }
 export class TargetMark extends BasicEffect{

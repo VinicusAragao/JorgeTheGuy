@@ -21,13 +21,13 @@ export class UserInterface{
 		this.onClick = config.onClick ? config.onClick : () => {}
 		game.userInterfaces.push(this)
 	}
-	checkPointerEvents(point,clicked){
+	checkPointerEvents(point,event){
 		this.children.forEach(child => {
-			child.checkPointerEvents(point,clicked)
+			child.checkPointerEvents(point,event)
 		})
 		if(this.isPointInside(point)){
 			this.onHover(true)
-			this.onClick(clicked)
+			this.onClick(event)
 			return true
 		}
 		this.onHover(false)
@@ -64,28 +64,33 @@ export class Component{
 		this.height = config.height ? config.height : 0
 		this.ratio = config.ratio ? config.ratio : null
 
-		if(this.positionType === 'relative'){
-			if(typeof this.pos.x === 'string') this.pos.x = this.parent.pos.x * (parseFloat(this.pos.x)/100)
-			else this.pos.x += this.parent.pos.x
 
-			if(typeof this.pos.y === 'string') this.pos.y = this.parent.pos.y * (parseFloat(this.pos.y)/100)
-			else this.pos.y += this.parent.pos.y
-
-			if(typeof this.width === 'string') this.width = this.parent.width * (parseFloat(this.width)/100)
-
-			if(typeof this.height === 'string') this.height = this.parent.height * (parseFloat(this.height)/100)
-			
-			this.width = Math.min(this.width,this.parent.width)
-			this.height = Math.min(this.height,this.parent.height)
-		}
-		else if(this.positionType === 'absolute'){
-			this.pos.add(this.parent.pos)
-		}
+		if(typeof this.width === 'string') this.width = this.parent.width * (parseFloat(this.width)/100)
+		if(typeof this.height === 'string') this.height = this.parent.height * (parseFloat(this.height)/100)
 
 		if(this.ratio){
 			this.width = this.width === 0 ? this.height * this.ratio : this.width
 			this.height = this.height === 0 ? this.width * this.ratio : this.height
+		} 
+
+		if(typeof this.pos.x === 'string'){
+			if(this.pos.x === 'center'){
+				this.pos.x = (this.parent.width - this.width) / 2 + this.parent.pos.x
+			}
+			else this.pos.x = this.parent.pos.x * (parseFloat(this.pos.x)/100)
 		}
+		else this.pos.x += this.parent.pos.x
+
+		if(typeof this.pos.y === 'string'){
+			if(this.pos.y === 'center'){
+				this.pos.y = (this.parent.height - this.height) / 2 + this.parent.pos.y
+			}
+			else this.pos.y = this.parent.pos.y * (parseFloat(this.pos.y)/100)
+		}
+		else this.pos.y += this.parent.pos.y
+		
+		this.width = Math.min(this.width,this.parent.width)
+		this.height = Math.min(this.height,this.parent.height)
 
 		this.visible = config.visible ? config.visible : true
 		this.opacity = config.opacity ? config.opacity : 1
@@ -149,23 +154,23 @@ export class Component{
 		&& point.y > this.pos.y
 		&& point.y < this.pos.y + this.height
 	}
-	checkPointerEvents(point,clicked){
+	checkPointerEvents(point,event){
 		if(this.isPointInside(point)){
 			if(this.onHover){
 				this.onHover(true)
 				this.hovered = true
 			}
 			if(this.onClick){
-				this.onClick(clicked)
-				this.clicked = this.clicked
-			}
+				this.onClick(true,event)
+				this.clicked = event.type === 'pointerdown'
+			} 
 		}
 		else{
 			this.onHover(false)
 			this.hovered = false
 		}
 		this.children.forEach(child => {
-			child.checkPointerEvents(point,clicked)
+			child.checkPointerEvents(point,event)
 		})
 	}
 	resizePercentageValues(){
