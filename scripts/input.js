@@ -40,7 +40,7 @@ export class Input{
 
 		if(e.type !== 'keyup') return
 		switch(e.key){
-		case '+':
+		case '-':
 		case 'r': 
 			inventoryInterface.toggle()
 		break
