@@ -1,0 +1,476 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "city9.json",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "aaaaa.json": {
+            "scale": 0.44382812499999996,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 642.1404682274248,
+                "y": 79.98591797218796
+            }
+        },
+        "area1.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 314,
+                "y": 346
+            }
+        },
+        "area2.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 370,
+                "y": 798
+            }
+        },
+        "area3.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 954,
+                "y": 346
+            }
+        },
+        "area4.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1010,
+                "y": 446
+            }
+        },
+        "area5.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 950,
+                "y": -10
+            }
+        },
+        "area6.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 370,
+                "y": 446
+            }
+        },
+        "area7.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 922,
+                "y": 218
+            }
+        },
+        "area8.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1010,
+                "y": 94
+            }
+        },
+        "area9.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 370,
+                "y": 94
+            }
+        },
+        "arrowProjectile.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "bow.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "cavern1.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 331.81818181818187,
+                "y": -277.27272727272725
+            }
+        },
+        "cavernTileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "city.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 322.72727272727263,
+                "y": 177.27272727272725
+            }
+        },
+        "city.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "city10.json": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 320.6666666666667,
+                "y": 176.66666666666663
+            }
+        },
+        "city11.json": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.5,
+                "y": 176.5
+            }
+        },
+        "city12.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 322.72727272727263,
+                "y": 177.27272727272725
+            }
+        },
+        "city13.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 322,
+                "y": 178
+            }
+        },
+        "city14.json": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 345.33333333333337,
+                "y": 175.66666666666669
+            }
+        },
+        "city15.json": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 317.5,
+                "y": 176.5
+            }
+        },
+        "city16.json": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.5,
+                "y": 176.5
+            }
+        },
+        "city17.json": {
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 322.72727272727263,
+                "y": 177.27272727272725
+            }
+        },
+        "city18.json": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 322.5,
+                "y": 524.5
+            }
+        },
+        "city19.json": {
+            "scale": 0.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 321,
+                "y": 177
+            }
+        },
+        "city2.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 321,
+                "y": 177
+            }
+        },
+        "city20.json": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.5,
+                "y": 176.5
+            }
+        },
+        "city3.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 321.2121212121212,
+                "y": 177.27272727272725
+            }
+        },
+        "city4.json": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 322.72727272727263,
+                "y": 177.27272727272725
+            }
+        },
+        "city5.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 321,
+                "y": 177
+            }
+        },
+        "city6.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 320,
+                "y": 177
+            }
+        },
+        "city7.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 321,
+                "y": 177
+            }
+        },
+        "city8.json": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.66666666666663,
+                "y": 175.66666666666669
+            }
+        },
+        "city9.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319,
+                "y": 175
+            }
+        },
+        "clashBlock.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "clashBreak.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "commerceTend.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "goblin.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "goblinRanged.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 8
+        },
+        "greatSword.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 16
+        },
+        "greatSwordKnight.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "groundTileset.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1.5
+        },
+        "house.json": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 470,
+                "y": 242
+            }
+        },
+        "house.tmj": {
+            "scale": 0.125,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 20,
+                "y": -564
+            }
+        },
+        "house.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "hunter.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "knife.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "militia.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "plants.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "player.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "potato.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "puddleGoblinBlood.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "puddleHumanBlood.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "rock.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "spear.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "stage2.tmj": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 338,
+                "y": 264
+            }
+        },
+        "targetMark.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "thrownRock.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "trailGoblinBlood.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "trailHumanBlood.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tree.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tutorial.json": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 293.33333333333326,
+                "y": 183.99999999999994
+            }
+        },
+        "wall.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "well.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        }
+    },
+    "frame.defaultDuration": 250,
+    "last.exportedFilePath": "/srv/http/projects/sideThing/tiled",
+    "last.externalTilesetPath": "/srv/http/projects/sideThing/tiled",
+    "last.imagePath": "/srv/http/projects/sideThing/images",
+    "last.worldFilePath": "/srv/http/projects/sideThing/tiled",
+    "loadedWorlds": [
+        "/srv/http/projects/sideThing/tiled/coisa.world"
+    ],
+    "map.height": 11,
+    "map.lastUsedExportFilter": "All Files (*)",
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 32,
+    "map.tileWidth": 32,
+    "map.width": 20,
+    "mapScene.enableWorlds": true,
+    "openFiles": [
+        "wall.tsx",
+        "city14.json",
+        "city15.json",
+        "city16.json",
+        "city11.json",
+        "city8.json",
+        "city4.json",
+        "city17.json",
+        "city2.json",
+        "city5.json",
+        "city19.json",
+        "city7.json",
+        "city.json",
+        "city12.json",
+        "city13.json",
+        "city10.json",
+        "city18.json",
+        "city9.json",
+        "city6.json",
+        "commerceTend.tsx",
+        "city3.json"
+    ],
+    "project": "sideThing.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "wall.tsx",
+        "city14.json",
+        "city15.json",
+        "city16.json",
+        "city11.json",
+        "city8.json",
+        "city4.json",
+        "city17.json",
+        "city2.json",
+        "city5.json",
+        "city19.json",
+        "city7.json"
+    ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 32,
+        "width": 32
+    }
+}

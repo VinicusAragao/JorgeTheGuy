@@ -1,0 +1,146 @@
+{
+    "maps": [
+        {
+            "fileName": "city.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": -640
+        },
+        {
+            "fileName": "city2.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": -992
+        },
+        {
+            "fileName": "city3.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": -288
+        },
+        {
+            "fileName": "city4.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": -288
+        },
+        {
+            "fileName": "city9.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": -992
+        },
+        {
+            "fileName": "city8.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": -288
+        },
+        {
+            "fileName": "city7.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": -640
+        },
+        {
+            "fileName": "city6.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": -640
+        },
+        {
+            "fileName": "city5.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": -992
+        },
+        {
+            "fileName": "city10.json",
+            "height": 352,
+            "width": 640,
+            "x": 1280,
+            "y": -288
+        },
+        {
+            "fileName": "city13.json",
+            "height": 352,
+            "width": 640,
+            "x": 1280,
+            "y": -640
+        },
+        {
+            "fileName": "city12.json",
+            "height": 352,
+            "width": 640,
+            "x": 1280,
+            "y": -992
+        },
+        {
+            "fileName": "city11.json",
+            "height": 352,
+            "width": 640,
+            "x": -1280,
+            "y": -288
+        },
+        {
+            "fileName": "city20.json",
+            "height": 352,
+            "width": 640,
+            "x": 1280,
+            "y": -1344
+        },
+        {
+            "fileName": "city19.json",
+            "height": 352,
+            "width": 640,
+            "x": 640,
+            "y": -1344
+        },
+        {
+            "fileName": "city18.json",
+            "height": 352,
+            "width": 640,
+            "x": -640,
+            "y": -1344
+        },
+        {
+            "fileName": "city16.json",
+            "height": 352,
+            "width": 640,
+            "x": -1280,
+            "y": -640
+        },
+        {
+            "fileName": "city15.json",
+            "height": 352,
+            "width": 640,
+            "x": -1280,
+            "y": -992
+        },
+        {
+            "fileName": "city14.json",
+            "height": 352,
+            "width": 640,
+            "x": -1280,
+            "y": -1344
+        },
+        {
+            "fileName": "city17.json",
+            "height": 352,
+            "width": 640,
+            "x": 0,
+            "y": -1344
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}
