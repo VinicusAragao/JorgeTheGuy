@@ -62,14 +62,13 @@ export class Area{
 		}
 	}
 	getPath(startingEntity,endingCell){
-		const path = pathfinder.getPath(
+		return pathfinder.getPath(
 			startingEntity.cell,
 			endingCell,
 			this.collisionMap,
+			startingEntity.walksDiagonally,
 			startingEntity.weapon.type === 'ranged',
-			startingEntity.walksDiagonally
 		)		
-		return path
 	}
 	generateEffect(className){
 		const group = this.effects[className]

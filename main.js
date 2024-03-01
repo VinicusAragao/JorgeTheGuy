@@ -127,7 +127,7 @@ class Game{
 			}
 		}}
 
-		for(let i = this.deleteQueue.length-1; i > 0; i--){
+		for(let i = this.deleteQueue.length-1; i >= 0; i--){
 			const request = this.deleteQueue[i]
 			const item = request.item
 
@@ -182,22 +182,6 @@ class Game{
 		localStorage.setItem('roomY',this.currentArea.y)
 		localStorage.setItem('playerX',this.player.cell.x)
 		localStorage.setItem('playerY',this.player.cell.y)
-		// const allEntities = []
-		// for(let y = 0; y < game.world.areas.length;y++){
-		// for(let x = 0; x < game.world.areas[y].length;x++){
-		// 	const area = game.world.areas[y][x]
-		// 	const i = x + y * game.world.areas[y].length
-
-		// 	if(area){
-		// 		area.entities.forEach(entity => allEntities.push(entity))	
-		// 	}			
-		// }}
-		// allEntities.forEach(entity => {
-		// 	console.log(JSON.parse(JSON.stringify(entity,['lifePoints'])))
-		// })
-		// localStorage.setItem('game',JSON.stringify(this))
-		// console.log(localStorage.game)
-		// console.log(allEntities,localStorage)
 	}
 }	
 function initialLoad(){
@@ -223,7 +207,8 @@ function initialLoad(){
 		'trailGoblinBlood.tsx',
 		'hunter.tsx',
 		'arrowProjectile.tsx',
-		'bow.tsx'
+		'bow.tsx',
+		'peasant.tsx'
 	],[
 		'throw.wav',	
 		'rockHit.wav',
@@ -258,6 +243,7 @@ function initialLoad(){
 		game.currentArea = game.world.areas[game.save.roomY][game.save.roomX]
 		new Entities.Player(new Vector2D(game.save.playerX,game.save.playerY))
 				
+
 		const entityQuantity = 10
 		const possibleEntities = Object.assign({},Entities)
 		delete possibleEntities.Player
@@ -266,11 +252,11 @@ function initialLoad(){
 		// delete possibleEntities.GoblinRogue
 		// delete possibleEntities.GoblinRanged
 		// delete possibleEntities.Hunter
+		// delete possibleEntities.Peasant
 
-		const itemQuantity = 20
+		const itemQuantity = 2
 		const possibleItems = Object.assign({},Items)
 		delete possibleItems.None
-		delete possibleItems.BaseItem
 		delete possibleItems.PuddleHumanBlood
 		delete possibleItems.PuddleGoblinBlood
 		delete possibleItems.TrailHumanBlood
@@ -280,7 +266,6 @@ function initialLoad(){
 		for(let x = 0; x < game.world.areas[y].length;x++){
 			const area = game.world.areas[y][x]
 			if(area){
-
 				for(let i = 0; i < entityQuantity; i++){
 					const cell = new Vector2D(randomInt(0,area.size.x-1),randomInt(0,area.size.y-1))
 					if(!area.isFreeCell(cell)){
@@ -310,6 +295,7 @@ function initialLoad(){
 
 initialLoad()
 /* A Fazer
+2. AI...?
 3. Concertar o movimento... e por consequencia o manejamento de turnos
 4. Mapa(ou minimapa)
 5. Salvamento de progresso, incluindo entidades e objetos do ambiente
@@ -324,7 +310,4 @@ Ideias para Adicionar
 Bugs a consertar:
 - Ao trocar de area, se uma entidade estiver na celúla da qual o jogador iria ocupar, ele fica na mesma posição
 da sala anterior, dando a impressão que ele se 'teleporta' pro outro lado da sala. 
-
-- NPCs pulam precisam de 1 turno a menos para se recaregar depois de atacar
-- NPCs com ataques de longo alcance estão usando a direção do pathfinding errada
 */

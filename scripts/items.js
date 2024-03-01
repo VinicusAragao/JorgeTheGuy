@@ -1,7 +1,7 @@
 import {Vector2D,toRadian} from './geometry.js'
 import * as Projectiles from './projectiles.js'
 
-export class BaseItem{
+class BaseItem{
 	constructor(tileset,data){
 		if(tileset){
 			this.tileset = tileset

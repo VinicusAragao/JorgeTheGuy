@@ -85,6 +85,8 @@ class BasicEntity{
 		this.interactionCount = 0
 		this.messageCount = 0
 
+		this.hostileAgainst = []
+
 		this.area.entities.push(this)
 		this.area.updateCollisionMap(this.cell)
 	}
@@ -107,6 +109,7 @@ class BasicEntity{
 		this.movementRequest = null
 		this.deliveredAttacks = []
 
+		this.hostileAgainst.forEach(entity => entity.hostileAgainst.findAndRemove(this))
 		if(this.interactingWith) this.exitInteraction()
 
 		this.area.updateCollisionMap(null,this.cell)
@@ -139,6 +142,11 @@ class BasicEntity{
 		
 		this.lifePoints -= totalDamage
 		if(this.lifePoints <= 0) this.death()
+
+		if(this.hostileAgainst && !this.hostileAgainst.includes(damageDealer)){
+			this.hostileAgainst.push(damageDealer)
+			damageDealer.hostileAgainst.push(this)
+		}
 
 		this.updateBars()		
 		return totalDamage
@@ -364,6 +372,10 @@ class NPC extends BasicEntity{
 			distance: Infinity,
 			path: {length: Infinity}
 		}
+		this.behaviour = "aggressive" 
+		// when noticing a enemy:
+		// passive = flees
+		// aggressive = figths
 	}
 	findTarget(){
 		this.target = {
@@ -374,8 +386,8 @@ class NPC extends BasicEntity{
 			isPossible: false
 		}
 		this.area.entities.forEach(entity => {
-			if(entity.alive && entity !== this){
-			// if(entity.alive && entity.faction !== this.faction){
+			// if(entity !== this){
+			if(entity.faction !== this.faction || this.hostileAgainst.includes(entity)){
 				const path = this.area.getPath(this,entity.cell) 
 
 				if(!path.isPossible && this.target.isPossible) return
@@ -406,9 +418,14 @@ class NPC extends BasicEntity{
 		 	this.queueAttack(this.weapon.preChargeData) 
 		}
 		else if(this.findTarget()){
-			if(!this.queueAttack()){
-				const path = this.target.cells[1] ? this.target.cells[1] : this.target.cells[0]
-				this.queueMovement(path)	
+			if(this.behaviour === 'aggressive'){
+				if(!this.queueAttack()){
+					const path = this.target.cells[1] ? this.target.cells[1] : this.target.cells[0]
+					this.queueMovement(path)	
+				}
+			}
+			else if(this.behaviour === 'passive'){
+				
 			}
 		}
 		else{
@@ -480,5 +497,11 @@ export class Hunter extends Human{
 
 		this.tilesetValues.charging = 1
 		this.tilesetValues.attack = 2
+	}
+}
+export class Peasant extends Human{
+	constructor(cell,area){
+		super(cell,loader.images.peasant,area)
+		this.behaviour = 'passive'
 	}
 }

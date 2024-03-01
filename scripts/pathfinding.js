@@ -38,7 +38,7 @@ export class Pathfinder{
 			length: current.g + 1
 		}
 		for(let i = current.g; i >= 0;i--){
-			path.cells[i] = Object.assign({},node)
+			path.cells[i] = node
 			node = node.parent
 		} 
 		return path
@@ -101,7 +101,72 @@ export class Pathfinder{
 			}}
 		}
 	}
-	getPath(start,end,collisionMap,rangePreference,canGoDiagonally){
+	getPath(start,end,collisionMap,canGoDiagonally,rangePreference){
+		this.resetMap(collisionMap)
+		this.canGoDiagonally = canGoDiagonally
+
+		const open = new Array
+		const initialNode = this.nodes[start.y][start.x]
+		const finalNode = this.nodes[end.y][end.x]
+
+		finalNode.walkable = true
+		
+		initialNode.h = this.canGoDiagonally ? getDistance(initialNode,finalNode) : getManhatthanDistance(initialNode,finalNode) 
+		initialNode.f = initialNode.h
+		open.push(initialNode)
+
+		while(open.length){
+			const current = open[open.length - 1]
+			current.closed = true
+			open.pop()
+
+			if(current === finalNode) return this.tracePath(current,true)
+
+			let longerAxis = Math.abs(finalNode.x - current.x) < Math.abs(finalNode.y - current.y)
+			longerAxis = rangePreference ? !longerAxis : longerAxis 
+			this.getChild(current,longerAxis)
+
+			for(const child of current.children){
+				child.g = current.g + 1
+				child.h = this.canGoDiagonally ? getDistance(child,finalNode) : getManhatthanDistance(child,finalNode)
+				child.f = child.g + child.h
+
+				let isInOpen = false
+				let index = 0
+
+
+				for(let i = 0; i < open.length;i++){
+					const node = open[i]
+					
+					if(child.f <= node.f) index = i + 1
+					if(child === node){
+						isInOpen = true
+						
+						if(child.g < node.g){
+							console.log('AAAAAAAAAAAAAAAAAAAA')
+							open.splice(i,1)
+							open.splice(index,0,child)
+						}
+						break
+					}
+				}
+				if(!isInOpen) open.splice(index,0,child)
+			}
+		}
+
+		let closestNode = {h:Infinity,g:Infinity}		
+		for(let y = 0; y < this.nodes.length;y++){
+		for(let x = 0; x < this.nodes[y].length;x++){
+			const node = this.nodes[y][x]
+			if((node.h > 0 && node.h < closestNode.h)
+			|| (node.h === closestNode.h && node.g < closestNode.g)){
+				closestNode = node
+			}	
+		}}
+
+		return this.tracePath(closestNode,false)
+	}
+	getEscapePath(start,end,collisionMap,canGoDiagonally,minimumDistance){
 		this.resetMap(collisionMap)
 		this.canGoDiagonally = canGoDiagonally
 		const open = new Array
@@ -109,58 +174,10 @@ export class Pathfinder{
 		const finalNode = this.nodes[end.y][end.x]
 
 		finalNode.walkable = true
-		
+
 		initialNode.h = getManhatthanDistance(initialNode,finalNode)
 		initialNode.f = initialNode.h
 		open.push(initialNode)
-
-		while(open.length){
-			let current = {f:Infinity}
-			let currentIndex = 0
-
-			open.forEach((node,index) => {
-				if(node.f < current.f){
-					current = node
-					currentIndex = index
-				}
-			})
-			open.splice(currentIndex,1)
-			current.closed = true
-
-			if(current === finalNode) return this.tracePath(current,true)
-			let longerAxis = Math.abs(finalNode.x - current.x) < Math.abs(finalNode.y - current.y)
-			longerAxis = rangePreference ? !longerAxis : longerAxis 
-			this.getChild(current,longerAxis)
-
-			for(const child of current.children){
-				child.g = current.g + 1
-				child.h = canGoDiagonally ? getDistance(child,finalNode) : getManhatthanDistance(child,finalNode)
-				child.f = child.g + child.h
-
-				let isInOpen = false
-				for(let i = 0; i < open.length;i++){
-					const node = open[i]
-					if(child === node){
-						isInOpen = true
-						if(child.g < node.g) open[index] = child
-						break
-					}
-				}
-				if(!isInOpen) open.push(child)
-			}
-		}
-
-		let current = {h:Infinity,g:Infinity}		
-		for(let y = 0; y < this.nodes.length;y++){
-		for(let x = 0; x < this.nodes[y].length;x++){
-			const node = this.nodes[y][x]
-			if((node.h > 0 && node.h < current.h)
-			|| (node.h === current.h && node.g < current.g)){
-				current = node
-			}	
-		}}
-		const path = this.tracePath(current,false)
-		return this.tracePath(current)
 	}
 }
 

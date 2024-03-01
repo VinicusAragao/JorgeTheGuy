@@ -55,5 +55,3 @@ export class Input{
 		}
 	}
 }
-
-//alguma coisa
