@@ -4,6 +4,7 @@ export class AudioPlayer extends AudioContext{
 		this.buffers = buffers
 	}
 	playAudio(config){
+		if(config.gain === 0) return
 		if(this.buffers[config.file]){
 			const source = this.createBufferSource()
 			source.buffer = this.buffers[config.file]

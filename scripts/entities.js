@@ -1,6 +1,6 @@
 import {Vector2D,randomInt} from './geometry.js'
 import * as Items from './items.js'
-import {dialog} from './dialog.js'
+import {RelationManager} from './relations.js'
 
 class LifeBar{
 	constructor(entity){
@@ -85,7 +85,7 @@ class BasicEntity{
 		this.interactionCount = 0
 		this.messageCount = 0
 
-		this.hostileAgainst = []
+		this.relationManager = new RelationManager(this)
 
 		this.area.entities.push(this)
 		this.area.updateCollisionMap(this.cell)
@@ -109,7 +109,7 @@ class BasicEntity{
 		this.movementRequest = null
 		this.deliveredAttacks = []
 
-		this.hostileAgainst.forEach(entity => entity.hostileAgainst.findAndRemove(this))
+		this.relationManager.clearAllRelations()
 		if(this.interactingWith) this.exitInteraction()
 
 		this.area.updateCollisionMap(null,this.cell)
@@ -139,15 +139,12 @@ class BasicEntity{
 			default: totalDamage = damageDealer.weapon.damage - this.defense
 		}
 		totalDamage = Math.max(totalDamage,0)
-		
+
+		this.relationManager.gotAttackedBy(damageDealer)
+
 		this.lifePoints -= totalDamage
 		if(this.lifePoints <= 0) this.death()
-
-		if(this.hostileAgainst && !this.hostileAgainst.includes(damageDealer)){
-			this.hostileAgainst.push(damageDealer)
-			damageDealer.hostileAgainst.push(this)
-		}
-
+		
 		this.updateBars()		
 		return totalDamage
 	}
@@ -207,7 +204,7 @@ class BasicEntity{
 		if(this.steppedPuddle){
 			if(this.drippingDuration > 0){
 				this.drippingDuration--
-				return new Items[this.steppedPuddle.trail](this.steppedPuddle.lifeSpan,this.cell,this.area,this.mvtTranslation.direction)
+				return new Items[this.steppedPuddle.trail](this.steppedPuddle,this.cell,this.area,this.mvtTranslation.direction)
 			}
 			else this.steppedPuddle = null
 		}
@@ -370,7 +367,9 @@ class NPC extends BasicEntity{
 		this.target = {
 			entity: null,
 			distance: Infinity,
-			path: {length: Infinity}
+			cells: {length: Infinity},
+			cell: new Vector2D,
+			isPossible: false
 		}
 		this.behaviour = "aggressive" 
 		// when noticing a enemy:
@@ -387,7 +386,7 @@ class NPC extends BasicEntity{
 		}
 		this.area.entities.forEach(entity => {
 			// if(entity !== this){
-			if(entity.faction !== this.faction || this.hostileAgainst.includes(entity)){
+			if(entity.faction !== this.faction || this.relationManager.hostilityAgainst(entity)){
 				const path = this.area.getPath(this,entity.cell) 
 
 				if(!path.isPossible && this.target.isPossible) return

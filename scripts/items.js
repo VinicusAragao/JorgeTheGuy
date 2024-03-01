@@ -319,7 +319,7 @@ class Puddle extends BaseItem{
 		this.pickupable = false
 		this.interactible = true
 		
-		this.maxLifeSpan = 50
+		this.maxLifeSpan = 100
 		this.lifeSpan = this.maxLifeSpan
 		this.lastTileValue = this.tileset.tilecount - 1
 		this.tilesetChangeInterval = Math.floor(this.maxLifeSpan / this.lastTileValue)
@@ -350,14 +350,15 @@ export class PuddleGoblinBlood extends Puddle{
 	}	
 }
 class Trail extends BaseItem{
-	constructor(tileset,actualLifeSpan,maxLifeSpan,cell,area,direction){
+	constructor(tileset,originalPuddle,cell,area,direction){
 		super(tileset)
 
+		this.originalPuddle = originalPuddle
 		this.pickupable = false
 		this.interactible = true
 
-		this.maxLifeSpan = maxLifeSpan
-		this.lifeSpan = actualLifeSpan ? actualLifeSpan : maxLifeSpan
+		this.maxLifeSpan = originalPuddle.maxLifeSpan
+		this.lifeSpan = originalPuddle.lifeSpan ? originalPuddle.lifeSpan : this.maxLifeSpan
 		this.lastTileValue = this.tileset.tilecount - 1
 		this.tilesetChangeInterval = Math.floor(this.maxLifeSpan / this.lastTileValue)
 
@@ -376,12 +377,12 @@ class Trail extends BaseItem{
 	}
 }
 export class TrailHumanBlood extends Trail{
-	constructor(lifeSpan,cell,area,direction){
-		super(loader.images.trailHumanBlood,lifeSpan,50,cell,area,direction)
+	constructor(puddle,cell,area,direction){
+		super(loader.images.trailHumanBlood,puddle,cell,area,direction)
 	}
 }
 export class TrailGoblinBlood extends Trail{
-	constructor(lifeSpan,cell,area,direction){
-		super(loader.images.trailGoblinBlood,lifeSpan,50,cell,area,direction)
+	constructor(puddle,cell,area,direction){
+		super(loader.images.trailGoblinBlood,puddle,cell,area,direction)
 	}
 }

@@ -145,6 +145,15 @@ class Game{
 		this.currentArea.drawFirstLayer()
 		if(game.drawGrid){
 			canvas.drawGrid()
+			this.currentArea.entities.forEach(entity => {
+				if(entity === game.player || !entity.target.cells[0]) return
+				entity.target.cells.forEach(cell => {
+					const tile = this.currentArea.getTile(cell)
+					tile.stroke = '#f00'
+					canvas.drawRect(tile)
+					tile.stroke = '#333'
+				})
+			})
 			this.player.autoPath.forEach(tile => {
 				tile.stroke = '#ff0'
 				canvas.drawRect(tile)
@@ -244,7 +253,7 @@ function initialLoad(){
 		new Entities.Player(new Vector2D(game.save.playerX,game.save.playerY))
 				
 
-		const entityQuantity = 10
+		const entityQuantity = 20
 		const possibleEntities = Object.assign({},Entities)
 		delete possibleEntities.Player
 		// delete possibleEntities.Militia

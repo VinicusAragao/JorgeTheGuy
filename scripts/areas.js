@@ -1,4 +1,4 @@
-import {Vector2D,getDistance} from './geometry.js'
+import {Vector2D,getManhatthanDistance} from './geometry.js'
 import * as Effects from './effects.js'
 
 export class Area{
@@ -141,39 +141,49 @@ export class Area{
 		return true
 	}
 	processMovement(entity){
-		if(entity.movementRequest){
-			const request = entity.movementRequest
+		const request = entity.movementRequest
+		if(!request) return
+		
+		for(const secondEntity of this.entities){
+			if(secondEntity === entity) continue
 
-			request.entity.cell.set(request.newCell)
-			request.oldTile.entity = null
+			const secondRequest = secondEntity.movementRequest
+			if(!secondRequest) continue
 
-			request.entity.tile = request.newTile
-			request.newTile.entity = request.entity
-			
-			if(!request.newArea){
-				if(request.entity.occupiesTiles) this.updateCollisionMap(request.newCell,request.oldCell)
+			if(request.newCell.x === secondRequest.newCell.x
+			&& request.newCell.y === secondRequest.newCell.y){
+				return
 			}
-			else{
-				if(request.entity.occupiesTiles){ 
-					request.entity.area.updateCollisionMap(null,request.oldCell)
-					request.newArea.updateCollisionMap(request.newCell,null)
-				}
-
-				request.entity.des.set(request.newTile.des)
-				request.entity.updateBars()	
-
-				this.entities.findAndRemove(request.entity)
-				request.entity.area = request.newArea
-				request.newArea.entities.unshift(request.entity)
-				
-				request.entity.dripLiquid()
-			}
-
-			request.entity.updateTilesetPosition(request.entity.tilesetValues.walking)
-			
-			entity.movementRequest = null
 		}
 
+		request.entity.cell.set(request.newCell)
+		request.oldTile.entity = null
+
+		request.entity.tile = request.newTile
+		request.newTile.entity = request.entity
+			
+		if(!request.newArea){
+			if(request.entity.occupiesTiles) this.updateCollisionMap(request.newCell,request.oldCell)
+		}
+		else{
+			if(request.entity.occupiesTiles){ 
+				request.entity.area.updateCollisionMap(null,request.oldCell)
+				request.newArea.updateCollisionMap(request.newCell,null)
+			}
+
+			request.entity.des.set(request.newTile.des)
+			request.entity.updateBars()	
+
+			this.entities.findAndRemove(request.entity)
+			request.entity.area = request.newArea
+			request.newArea.entities.unshift(request.entity)
+				
+			request.entity.dripLiquid()
+		}
+
+		request.entity.updateTilesetPosition(request.entity.tilesetValues.walking)
+			
+		entity.movementRequest = null
 	}
 	processAttacks(entity){
 		const result = {
@@ -302,17 +312,17 @@ export class Area{
 		return cell.x >= 0 && cell.x < this.size.x && cell.y >= 0 && cell.y < this.size.y 
 	}
 	playAreaAudio(fileName){
-		const directionX = Math.abs(this.x) - Math.abs(game.currentArea.x)
-		const distance = getDistance(
+		const directionX = this.x - game.currentArea.x
+		const distance = getManhatthanDistance(
 			new Vector2D(this.x,this.y),
 			new Vector2D(game.currentArea.x,game.currentArea.y)
 		)
-		
+
 		audioPlayer.playAudio({
 			file: fileName,
-			gain: distance > 5 ? 0 : 1 / (distance + 1),
-			pan: directionX >= 1 ? 0.75 : directionX <= -1 ? -0.75 : 0,
-			delay: distance * 0.25,
+			gain: distance > 5 ? 0 : 1 / ((distance+1) * 3),
+			pan: directionX >= 1 ? 1 : directionX <= -1 ? -1 : 0,
+			delay: distance * 0.3,
 		})
 	}
 }

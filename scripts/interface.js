@@ -167,7 +167,7 @@ export class Inventory extends Component{
 				}
 
 				const cell = this.cells[newY][newX]
-				if(cell.item){
+				if(cell.item && cell.item !== this.grabbedItem){
 					cells = []
 					continue returnLoop
 				}
