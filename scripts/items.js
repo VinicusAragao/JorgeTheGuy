@@ -1,4 +1,5 @@
 import {Vector2D,toRadian} from './geometry.js'
+import {DrawableObject} from './canvas.js'
 import * as Projectiles from './projectiles.js'
 
 class BaseItem{
@@ -169,7 +170,7 @@ export class Spear extends Weapon{
 		this.type = 'spear'
 		this.name = 'Lança'
 		this.description = 'Uma lança simples, comum entre mílicias e guardas locais. Capaz de desferir golpes de uma distancia mais confortável.'
-		this.cellSize.set(1,4)
+		this.cellSize.set(1,5)
 
 		this.damage = 2
 		this.range = 2

@@ -1,28 +1,12 @@
 import {Vector2D,toRadian} from './geometry.js'
+import {DrawableObject} from './canvas.js'
 
-class BasicProjectile{
+class BasicProjectile extends DrawableObject{
 	constructor(creator,direction,tileset){
+		super(tileset,Vector2D.add(creator.cell,direction),creator.area)
 		this.creator = creator
-		this.cell = Vector2D.add(creator.cell,direction)
-		this.area = this.creator.area
-		this.tileset = tileset
-		this.image = tileset.image
-		this.opacity = 1
 
-		this.tile = this.area.getTile(this.cell)
 		this.alive = true
-
-		this.des = new Vector2D(this.tile.des)
-		this.size = new Vector2D(this.tileset.tilewidth,this.tileset.tileheight)
-		
-		this.tileValue = 0
-		this.sor = new Vector2D(
-			this.size.x * (this.tileValue % this.tileset.columns),
-			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
-		)
-
-		this.animationInterval = game.targetFrameRate
-		this.animationTimer = 0
 
 		this.direction = direction
 		this.traveledDistance = 0
@@ -36,15 +20,7 @@ class BasicProjectile{
 		}
 
 		this.hitSFX = null
-
-		this.area.projectiles.push(this)		
-	}
-	updateTilesetPosition(newValue){
-		this.tileValue = newValue ? newValue : this.tileValue
-		this.sor.set(
-			this.size.x * (this.tileValue % this.tileset.columns),
-			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
-		)
+		this.area.projectiles.push(this)
 	}
 	death(playSound,effects){
 		if(effects) effects.forEach(effect => effect.active = false)
@@ -92,14 +68,6 @@ class BasicProjectile{
 		}
 		this.startMovementTranslation(this.cell,oldCell)
 	}
-	animate(){
-		if(this.animationTimer >= this.animationInterval){
-			this.tileValue = this.tileValue + 1 < this.tileset.tilecount ? this.tileValue + 1 : 0 
-			this.animationTimer = 0
-			this.updateTilesetPosition()
-		}
-		this.animationTimer += game.deltaTime
-	}
 	startMovementTranslation(newCell,oldCell){
 		const totalTravel = Vector2D.sub(newCell,oldCell)
 		this.mvtTranslation.direction.set(Vector2D.limitTo(totalTravel,1))
@@ -123,7 +91,6 @@ class BasicProjectile{
 export class Rock extends BasicProjectile{
 	constructor(creator,direction){
 		super(creator,direction,loader.images.thrownRock)
-		this.animationInterval = game.targetFrameRate * 0.25
 		this.speed = 3
 		this.hitSFX = 'rockHit'
 	}
@@ -131,10 +98,8 @@ export class Rock extends BasicProjectile{
 export class Arrow extends BasicProjectile{
 	constructor(creator,direction){
 		super(creator,direction,loader.images.arrowProjectile)
-		this.animationInterval = game.targetFrameRate * 0.25
 		this.speed = 5
 		this.hitSFX = 'arrowHit'
-
 		this.radian = Vector2D.atan2(direction)
 	}
 }

@@ -30,8 +30,10 @@ class Game{
 
 		this.currentArea = null
 		this.pausedArea = null
+
 		this.userInterfaces = []
 		this.interfaceOpen = false
+		
 		this.player = null
 		this.deleteQueue = []
 
@@ -122,7 +124,7 @@ class Game{
 					projectile.movementTranslation()
 				})
 				for(const effectGroup in area.effects){
-					area.effects[effectGroup].forEach(effect => effect.animate())
+					area.effects[effectGroup].forEach(effect => effect.playAnimation())
 				}
 			}
 		}}
@@ -253,7 +255,7 @@ function initialLoad(){
 		new Entities.Player(new Vector2D(game.save.playerX,game.save.playerY))
 				
 
-		const entityQuantity = 20
+		const entityQuantity = 0
 		const possibleEntities = Object.assign({},Entities)
 		delete possibleEntities.Player
 		// delete possibleEntities.Militia
@@ -300,7 +302,6 @@ function initialLoad(){
 		game.tick()
 	})
 }
-
 
 initialLoad()
 /* A Fazer

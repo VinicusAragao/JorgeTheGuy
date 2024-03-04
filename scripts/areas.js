@@ -1,4 +1,5 @@
 import {Vector2D,getManhatthanDistance} from './geometry.js'
+import {DrawableObject} from './canvas.js'
 import * as Effects from './effects.js'
 
 export class Area{
@@ -33,9 +34,9 @@ export class Area{
 							break 
 						}
 					}
-
 					value -= tileset.firstgid
-					layer.tiles[y][x] = new Tile(cell,tileset,value)
+
+					layer.tiles[y][x] = new Tile(tileset,cell,this,value)
 					layer.allTiles.push(layer.tiles[y][x])
 				}
 			}
@@ -251,23 +252,20 @@ export class Area{
 		return false
 	}
 	drawFirstLayer(){
-		this.layers[0].allTiles.forEach(tile => {
-			canvas.drawImage(tile)
-			tile.items.forEach(item => canvas.drawImage(item))
-		})
+		this.layers[0].allTiles.forEach(tile => canvas.drawTile(tile))
 	}
 	drawOtherLayers(){
-		this.layers.forEach((layer,layerIndex) => {
-			if(layerIndex === 0) return
+		for(let i = 1; i < this.layers.length;i++){
+			const layer = this.layers[i]
 
 			layer.allTiles.forEach(tile => {
 				if(this.layers[0].tiles[tile.cell.y][tile.cell.x].entity){
 					tile.opacity = 0.75
 				}
 				else tile.opacity = 1
-				canvas.drawImage(tile)
+				canvas.drawTile(tile)
 			})
-		})
+		}
 	}
 	getTile(cell){
 		let x = cell.x < 0 ? 0 : cell.x
@@ -327,26 +325,19 @@ export class Area{
 	}
 }
 
-class Tile{
-	constructor(cell,tileset,value){
-		this.cell = cell
-		this.tileset = tileset
-		this.value = value
+class Tile extends DrawableObject{
+	constructor(tileset,cell,area,value){
+		super(tileset,null,area,value)
+		this.cell.set(cell)
+		this.tileValue = value
+
 		this.stroke = '#333'
 		this.strokeWidth = 0.5
 
-		this.image = tileset.image
-		this.size = new Vector2D(tileset.tilewidth,tileset.tileheight)
 		this.des = Vector2D.mult(cell,this.size)
-		this.sor = new Vector2D(
-			this.size.x * (value % tileset.columns),
-			this.size.y * Math.floor(value / tileset.columns)
-		)
-		this.opacity = 1
+		
 		this.entity = null
-		this.items = []
-
-		Object.assign(this,tileset[this.value])
+		this.items = [] 
 	}
 	itemsInteractions(){
 		this.items.forEach(item => {

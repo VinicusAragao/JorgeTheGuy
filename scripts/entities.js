@@ -1,5 +1,6 @@
 import {Vector2D,randomInt} from './geometry.js'
 import * as Items from './items.js'
+import {DrawableObject} from './canvas.js'
 import {RelationManager} from './relations.js'
 
 class LifeBar{
@@ -33,17 +34,9 @@ class LifeBar{
 	}
 }
 
-class BasicEntity{
-	constructor(cell,tileset,area){
-		this.cell = new Vector2D(cell)
-		this.tileset = tileset
-		this.image = this.tileset.image
-		this.area = area ? area : game.currentArea
-		this.tile = this.area.getTile(this.cell)
-		this.des = new Vector2D(this.tile.des)
-		this.size = new Vector2D(this.tileset.tilewidth,this.tileset.tileheight)
-		this.tileValue = 0
-		this.sor = new Vector2D
+class BasicEntity extends DrawableObject{
+	constructor(tileset,cell,area){
+		super(tileset,cell,area)
 
 		this.faction = 'none'
 		this.alive = true
@@ -154,13 +147,6 @@ class BasicEntity{
 
 		this.updateBars()
 	}
-	updateTilesetPosition(newValue){
-		this.tileValue = newValue
-		this.sor.set(
-			this.size.x * (this.tileValue % this.tileset.columns),
-			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
-		)
-	}
 	queueMovement(newCell,newArea){
 		if((this.area.isValidCell(newCell) && this.area.isFreeCell(newCell))
 		|| newArea){
@@ -239,7 +225,7 @@ class BasicEntity{
 }
 export class Player extends BasicEntity{
 	constructor(cell){
-		super(cell,loader.images.player)
+		super(loader.images.player,cell)
 		this.faction = 'human'
 		this.setLifePoints(3)
 
@@ -250,7 +236,7 @@ export class Player extends BasicEntity{
 		this.inventory = window.inventoryInterface
 		this.inventory.user = this
 
-		this.inventory.addItem(new Items.Bow())
+		this.inventory.addItem(new Items.Rock())
 		this.inventory.useItem(this.inventory.items[0])
 
 		this.tilesetValues.attack = 1
@@ -361,8 +347,8 @@ export class Player extends BasicEntity{
 	}
 }
 class NPC extends BasicEntity{
-	constructor(cell,image,area){
-		super(cell,image,area)
+	constructor(image,cell,area){
+		super(image,cell,area)
 
 		this.target = {
 			entity: null,
@@ -438,16 +424,16 @@ class NPC extends BasicEntity{
 	}
 }
 class Goblin extends NPC{
-	constructor(cell,image,area){
-		super(cell,image,area)
+	constructor(image,cell,area){
+		super(image,cell,area)
 		this.faction = 'monster'
 		this.setLifePoints(1)
 		this.blood = new Items.PuddleGoblinBlood()
 	}
 }
 class Human extends NPC{
-	constructor(cell,image,area){
-		super(cell,image,area)
+	constructor(image,cell,area){
+		super(image,cell,area)
 		this.faction = 'human'
 		this.setLifePoints(3)
 		this.blood = new Items.PuddleHumanBlood()
@@ -455,7 +441,7 @@ class Human extends NPC{
 }
 export class GoblinRogue extends Goblin{
 	constructor(cell,area){
-		super(cell,loader.images.goblin,area)
+		super(loader.images.goblin,cell,area)
 
 		new Items.Knife().equip(this)
 		this.tilesetValues.attack = 1
@@ -463,7 +449,7 @@ export class GoblinRogue extends Goblin{
 }
 export class GoblinRanged extends Goblin{
 	constructor(cell,area){
-		super(cell,loader.images.goblinRanged,area)
+		super(loader.images.goblinRanged,cell,area)
 
 		new Items.Rock().equip(this)
 
@@ -473,7 +459,7 @@ export class GoblinRanged extends Goblin{
 }
 export class Militia extends Human{
 	constructor(cell,area){
-		super(cell,loader.images.militia,area)
+		super(loader.images.militia,cell,area)
 		new Items.Spear().equip(this)
 	
 		this.tilesetValues.attack = 1
@@ -481,7 +467,7 @@ export class Militia extends Human{
 }
 export class GreatSwordKnight extends Human{
 	constructor(cell,area){
-		super(cell,loader.images.greatSwordKnight,area)
+		super(loader.images.greatSwordKnight,cell,area)
 		this.defense = 1
 		new Items.GreatSword().equip(this)
 
@@ -491,7 +477,7 @@ export class GreatSwordKnight extends Human{
 }
 export class Hunter extends Human{
 	constructor(cell,area){
-		super(cell,loader.images.hunter,area)
+		super(loader.images.hunter,cell,area)
 		new Items.Bow().equip(this)
 
 		this.tilesetValues.charging = 1
@@ -500,7 +486,7 @@ export class Hunter extends Human{
 }
 export class Peasant extends Human{
 	constructor(cell,area){
-		super(cell,loader.images.peasant,area)
+		super(loader.images.peasant,cell,area)
 		this.behaviour = 'passive'
 	}
 }

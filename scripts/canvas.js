@@ -1,5 +1,69 @@
 import {Vector2D} from './geometry.js'
 
+export class DrawableObject{
+	constructor(tileset,cell,area,tileValue){
+		this.cell = new Vector2D(cell)
+		this.sor = new Vector2D
+		this.des = new Vector2D
+		
+		this.tileset = {}
+		this.image = {}
+		this.size = new Vector2D
+
+		this.tileValue = tileValue === undefined ? 0 : tileValue
+		this.area = area ? area : game.currentArea
+		
+		this.opacity = 1
+		this.radian = 0
+
+		if(tileset){
+			this.tileset = tileset
+			this.image = this.tileset.image
+			this.size = new Vector2D(this.tileset.tilewidth,this.tileset.tileheight)
+			
+			Object.assign(this,tileset[this.tileValue])
+			if(this.animation){
+				this.animation = Object.assign({},this.animation) 
+			}
+		}
+
+		if(cell){
+			this.tile = this.area.getTile(this.cell)
+			this.des.set(new Vector2D(this.tile.des))
+		}
+
+		this.updateTilesetPosition()
+	}
+	updateTilesetPosition(newValue){
+		this.tileValue = newValue !== undefined ? newValue : this.tileValue
+		this.sor.set(
+			this.size.x * (this.tileValue % this.tileset.columns),
+			this.size.y * Math.floor(this.tileValue / this.tileset.columns)
+		)
+	}
+	animate(){
+		if(this.animation){
+			this.animation.currentDuration += game.targetFrameRate * game.deltaTime
+			if(this.animation.currentDuration > this.animation.frames[this.animation.currentFrame].duration){
+				this.animation.currentDuration -= this.animation.frames[this.animation.currentFrame].duration
+				this.animation.currentFrame++
+
+				if(this.animation.currentFrame >= this.animation.frames.length){
+					this.animation.currentFrame = 0
+					this.animation.repeatCount++
+
+					if(this.animation.repeatCount > this.animation.timesToReplay){
+						this.animation.repeatCount = 0
+						return false
+					}	
+				}
+				this.updateTilesetPosition(this.animation.frames[this.animation.currentFrame].tileValue)
+			}
+		}
+		return true
+	}
+}
+
 export class Canvas{
 	constructor(){
 		this.c = document.querySelector('canvas')
@@ -21,6 +85,12 @@ export class Canvas{
 		}
 
 		this.c.addEventListener('contextmenu', e => e.preventDefault())
+	}
+	drawTile(tile){
+		if(!tile.image) return
+		if(tile.animation) tile.animate()
+		this.drawImage(tile)
+		tile.items.forEach(item => this.drawImage(item))
 	}
 	drawTransition(){
 		if(this.transition.direction.x === 0 && this.transition.direction.y === 0) return
