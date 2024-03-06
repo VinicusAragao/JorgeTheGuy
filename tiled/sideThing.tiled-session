@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "wallTorch.tsx",
+    "activeFile": "city15.json",
     "expandedProjectPaths": [
         "."
     ],
@@ -110,11 +110,11 @@
             "scaleInEditor": 1
         },
         "city.json": {
-            "scale": 0.25,
-            "selectedLayer": 0,
+            "scale": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": -98,
-                "y": 242
+                "x": 258.25,
+                "y": 679.75
             }
         },
         "city.tsx": {
@@ -125,56 +125,56 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 339.5,
-                "y": -206.5
+                "x": 318.5,
+                "y": 294.5
             }
         },
         "city11.json": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 863.5,
-                "y": 277.5
+                "x": 318.5,
+                "y": 174.5
             }
         },
         "city12.json": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 337.5,
-                "y": -104.5
+                "x": 318.5,
+                "y": 175.5
             }
         },
         "city13.json": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 338.5,
-                "y": -215.5
+                "x": 318.5,
+                "y": 175.5
             }
         },
         "city14.json": {
-            "scale": 1,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 135.5,
-                "y": 605.5
+                "x": 1862,
+                "y": 826
             }
         },
         "city15.json": {
-            "scale": 1,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 134.5,
-                "y": 492.5
+                "x": 1562,
+                "y": 170
             }
         },
         "city16.json": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 86.5,
-                "y": -550.5
+                "x": 319.5,
+                "y": 175.5
             }
         },
         "city17.json": {
@@ -189,16 +189,16 @@
             "scale": 0.25,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 1410,
-                "y": 510
+                "x": 1222,
+                "y": 822
             }
         },
         "city19.json": {
             "scale": 0.25,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": -730,
-                "y": 954
+                "x": -254,
+                "y": 1602
             }
         },
         "city2.json": {
@@ -213,24 +213,24 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": -2423.5,
-                "y": 246.5
+                "x": 318.5,
+                "y": 175.5
             }
         },
         "city3.json": {
-            "scale": 1,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 500.5,
-                "y": 274.5
+                "x": 140.66666666666669,
+                "y": 183.33333333333331
             }
         },
         "city4.json": {
-            "scale": 1,
-            "selectedLayer": 0,
+            "scale": 0.75,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 661.5,
-                "y": 275.5
+                "x": -522,
+                "y": -341.99999999999994
             }
         },
         "city5.json": {
@@ -261,8 +261,8 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 942.5,
-                "y": 276.5
+                "x": 319.5,
+                "y": 175.5
             }
         },
         "city9.json": {
@@ -272,6 +272,10 @@
                 "x": 320,
                 "y": 177
             }
+        },
+        "cityGate.tsx": {
+            "dynamicWrapping": false,
+            "scaleInEditor": 1
         },
         "clashBlock.tsx": {
             "scaleInDock": 1,
@@ -311,6 +315,7 @@
             "scaleInEditor": 1.5
         },
         "groundTorch.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 4
         },
@@ -363,6 +368,7 @@
             "scaleInEditor": 1
         },
         "puddleGoblinBlood.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -385,6 +391,10 @@
                 "x": 338,
                 "y": 264
             }
+        },
+        "sword.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "targetMark.tsx": {
             "scaleInDock": 1,
@@ -421,6 +431,7 @@
             "scaleInEditor": 3
         },
         "wallTorch.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -445,32 +456,32 @@
     "map.width": 20,
     "mapScene.enableWorlds": true,
     "openFiles": [
-        "city11.json",
+        "tree.tsx",
+        "cityGate.tsx",
+        "city.json",
         "city4.json",
-        "city16.json",
-        "wallTorch.tsx",
-        "frozenLandscape.tsx"
+        "city15.json"
     ],
     "project": "sideThing.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "city4.json",
-        "city7.json",
-        "city19.json",
+        "tree.tsx",
+        "cityGate.tsx",
         "city.json",
-        "city6.json",
+        "city4.json",
+        "city15.json",
+        "sword.tsx",
+        "city.tsx",
+        "puddleGoblinBlood.tsx",
+        "city19.json",
+        "city18.json",
         "city16.json",
-        "city10.json",
-        "city3.json",
-        "city11.json",
-        "city8.json",
-        "frozenLandscape.tsx",
-        "wallTorch.tsx"
+        "city14.json"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 32,
-        "width": 32
+        "height": 20,
+        "width": 7
     }
 }

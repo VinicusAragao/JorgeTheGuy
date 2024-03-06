@@ -152,13 +152,26 @@ export class None extends Weapon{
 		this.damage = 0.5
 	}
 }
+export class Sword extends Weapon{
+	constructor(data){
+		super(loader.images.sword,data)
+
+		this.type = 'sword'
+		this.name = 'Espada'
+		this.description = 'Uma espada metálica simples, geralmente acompanhada por um escudo ou uma adaga na outra mão, dependendo da situação.'
+		this.cellSize.set(1,3)
+		this.strength = 1
+
+		this.attackSFX = 'knifeStab'
+	}
+}
 export class Knife extends Weapon{
 	constructor(data){
 		super(loader.images.knife,data)
 
 		this.type = 'dagger'
 		this.name = 'Faca'
-		this.description = 'Pontuda e leve, perfeita para ataques sorrateiros.'
+		this.description = 'Pontuda, leve e pequena, perfeita para atacar alvos vulneráveis ou desavisados.'
 		this.cellSize.set(1,2)
 
 		this.attackSFX = 'knifeStab'
@@ -169,7 +182,7 @@ export class Spear extends Weapon{
 		super(loader.images.spear,data)
 		this.type = 'spear'
 		this.name = 'Lança'
-		this.description = 'Uma lança simples, comum entre mílicias e guardas locais. Capaz de desferir golpes de uma distancia mais confortável.'
+		this.description = 'Uma lança simples, comum entre mílicias e guardas locais. Capaz de desferir golpes de uma distancia segura.'
 		this.cellSize.set(1,5)
 
 		this.damage = 2
@@ -182,14 +195,14 @@ export class GreatSword extends Weapon{
 	constructor(data){
 		super(loader.images.greatSword,data)
 		this.type = 'greatSword'
-		this.name = 'Espada Pesada'
-		this.description = 'Uma espada pesada.'
+		this.name = 'Espada Grande'
+		this.description = 'Apesar de seu nome e aparência, não é tão pesada quanto parece. Esse tipo de espada é muito usada por tanto cavaleiros quanto mercenários, combinando o alcance de uma lança com a praticidade de uma espada.'
 		this.cellSize.set(2,4)
 
 		this.damage = 3
 		this.range = 1
 		this.strength = 3
-		this.cooldown = 2
+		this.cooldown = 1
 		this.attackSFX = 'swordSlash2'
 		this.chargingDuration = 1
 	}
@@ -291,7 +304,7 @@ export class Rock extends RangedWeapon{
 	constructor(data){
 		super(loader.images.rock,data)
 		this.name = 'Pedra'
-		this.description = 'Uma pedra.'
+		this.description = 'Uma pedra, esta em particular é especialmente afiada. Subestimá-la pode ser fatal.'
 
 		this.damage = 1
 		this.range = 5

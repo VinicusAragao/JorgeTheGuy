@@ -22,7 +22,10 @@ export class Input{
 			this.mouse[e.button] = false
 
 			if(e.button === 0 && !game.interfaceOpen){
-				const cell = Vector2D.div(this.pointer,new Vector2D(64)).roundDown()
+				const tileDisplaySize = new Vector2D(game.currentArea.tilewidth,game.currentArea.tileheight).mult(canvas.zoom)
+
+				const cell = Vector2D.div(Vector2D.sub(this.pointer,canvas.extraSpace),tileDisplaySize).roundDown()
+
 				if(game.currentArea.isValidCell(cell)){
 					game.player.targetTile = game.currentArea.getTile(cell)
 				}

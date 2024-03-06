@@ -18,10 +18,10 @@ class LifeBar{
 	update(){
 		const row = Math.floor(this.id / 10) + 1
 		const col = this.id % 10
-		const thing = Math.min(this.entity.lifeBars.length,10)
+		const minW = Math.min(this.entity.lifeBars.length,10)
 
-		this.maxW = this.entity.tile.size.x - thing
-		this.size.set(Math.min(this.maxW / thing,this.maxW),2.5)
+		this.maxW = this.entity.tile.size.x - minW
+		this.size.set(Math.min(this.maxW / minW,this.maxW),2.5)
 
 		this.des.set(this.entity.des)
 		this.des.add(this.size.x * col + col,-3 * row)
@@ -236,7 +236,7 @@ export class Player extends BasicEntity{
 		this.inventory = window.inventoryInterface
 		this.inventory.user = this
 
-		this.inventory.addItem(new Items.Rock())
+		this.inventory.addItem(new Items.Bow())
 		this.inventory.useItem(this.inventory.items[0])
 
 		this.tilesetValues.attack = 1

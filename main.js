@@ -21,6 +21,7 @@ Array.prototype.findAndRemove = function (item){
 class Game{
 	constructor(){
 		this.resolution = new Vector2D(1280,704)
+		this.ratio = this.resolution.x / this.resolution.y
 
 		this.desiredFPS = 60
 		this.targetFrameRate = 1000 / this.desiredFPS
@@ -194,6 +195,39 @@ class Game{
 		localStorage.setItem('playerX',this.player.cell.x)
 		localStorage.setItem('playerY',this.player.cell.y)
 	}
+	addEntity(name,cell,area){
+		new Entities[name](cell,area)
+	}
+	addItem(name,cell,area){
+		new Items[name]().drop(cell,area)
+	}
+	KILLTHEMALL(selectedArea){
+		if(selectedArea){
+			selectedArea.entities.forEach(entity => {
+				if(entity !== game.player){
+					const originalDamage = game.player.weapon.damage
+					game.player.weapon.damage = 999
+					entity.calculateDamage(game.player)
+					game.player.weapon.damage = originalDamage
+				}
+			})
+			return
+		}
+		for(let y = 0; y < this.world.areas.length;y++){
+		for(let x = 0; x < this.world.areas[y].length;x++){
+			const area = this.world.areas[y][x] 
+			if(area){
+				area.entities.forEach(entity => {
+					if(entity !== game.player){
+						const originalDamage = game.player.weapon.damage
+						game.player.weapon.damage = 999
+						entity.calculateDamage(game.player)
+						game.player.weapon.damage = originalDamage
+					}
+				})
+			}
+		}}
+	}
 }	
 function initialLoad(){
 	window.loader = new Loader
@@ -219,7 +253,8 @@ function initialLoad(){
 		'hunter.tsx',
 		'arrowProjectile.tsx',
 		'bow.tsx',
-		'peasant.tsx'
+		'peasant.tsx',
+		'sword.tsx'
 	],[
 		'throw.wav',	
 		'rockHit.wav',
@@ -254,8 +289,7 @@ function initialLoad(){
 		game.currentArea = game.world.areas[game.save.roomY][game.save.roomX]
 		new Entities.Player(new Vector2D(game.save.playerX,game.save.playerY))
 				
-
-		const entityQuantity = 0
+		const entityQuantity = 50
 		const possibleEntities = Object.assign({},Entities)
 		delete possibleEntities.Player
 		// delete possibleEntities.Militia
@@ -299,6 +333,7 @@ function initialLoad(){
 		}}
 		game.running = true
 		
+		canvas.resize()
 		game.tick()
 	})
 }

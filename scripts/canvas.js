@@ -69,22 +69,24 @@ export class Canvas{
 		this.c = document.querySelector('canvas')
 		this.ctx = this.c.getContext('2d')
 
-		this.updateSize(game.resolution.x,game.resolution.y)
-
-		this.zoom = 2
-		this.alias = false
-		this.fill = '#000'
-
-		this.extraSpace = new Vector2D
-		this.screenShakeQueue = []
-
 		this.transition = {
 			direction: new Vector2D,
 			position: new Vector2D,
 			size: new Vector2D(this.width,this.height)
 		}
 
+		this.zoom = 2
+		this.resize()
+
+		this.alias = false
+		this.fill = '#000'
+
+		this.extraSpace = new Vector2D
+		this.screenShakeSpace = new Vector2D
+		this.screenShakeQueue = []
+
 		this.c.addEventListener('contextmenu', e => e.preventDefault())
+		window.addEventListener('resize', () => this.resize())
 	}
 	drawTile(tile){
 		if(!tile.image) return
@@ -101,7 +103,7 @@ export class Canvas{
 	}
 	setTransition(direction){
 		this.transition.direction = direction 
-		this.transition.position.reset()
+		this.transition.position.set(this.extraSpace)
 	}
 	setScreenShake(power){
 		let index = 0
@@ -128,16 +130,16 @@ export class Canvas{
 
 		switch(currentItem.duration){
 			case 4: 
-				this.extraSpace.set(0,-currentItem.power)
+				this.screenShakeSpace.set(0,-currentItem.power)
 			break
 			case 3: 
-				this.extraSpace.set(0,currentItem.power)
+				this.screenShakeSpace.set(0,currentItem.power)
 			break
 			case 2: 
-				this.extraSpace.set(-currentItem.power,0)
+				this.screenShakeSpace.set(-currentItem.power,0)
 			break
 			case 1: 
-				this.extraSpace.set(currentItem.power,0)
+				this.screenShakeSpace.set(currentItem.power,0)
 			break
 			default: 
 				this.screenShakeQueue.shift()
@@ -147,18 +149,20 @@ export class Canvas{
 	changeCursor(cursor){
 		this.c.style.cursor = cursor ? cursor : 'default'
 	}
-	updateSize(width,height){
-		this.width = width
-		this.height = height
-		this.c.width = this.width
-		this.c.height = this.height
+	updateSize(size){
+		this.width = size.x
+		this.height = size.y
+		this.c.width = size.x
+		this.c.height = size.y
+
+		this.transition.size.set(size)
 	}
 	drawImage(img){
 		this.ctx.imageSmoothingEnabled = this.alias
 		this.ctx.globalAlpha = img.opacity
 		this.ctx.setTransform(this.zoom,0,0,this.zoom,
-			img.des.x * this.zoom + img.size.x + this.extraSpace.x,
-			img.des.y * this.zoom + img.size.y + this.extraSpace.y,
+			(img.des.x + img.size.x/2) * this.zoom + this.extraSpace.x + this.screenShakeSpace.x,
+			(img.des.y + img.size.y/2) * this.zoom + this.extraSpace.y + this.screenShakeSpace.y,
 		)
 		this.ctx.rotate(img.radian)
 
@@ -172,7 +176,10 @@ export class Canvas{
 		this.ctx.resetTransform()
 	}
 	drawRect(rect){
-		this.ctx.setTransform(this.zoom,0,0,this.zoom,this.extraSpace.x,this.extraSpace.y)
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			this.extraSpace.x + this.screenShakeSpace.x,
+			this.extraSpace.y + this.screenShakeSpace.y,
+		)
 
 		if(rect.fill){
 			this.ctx.fillStyle = rect.fill
@@ -186,7 +193,11 @@ export class Canvas{
 		this.ctx.resetTransform()
 	}
 	drawGrid(){
-		this.ctx.setTransform(this.zoom,0,0,this.zoom,this.extraSpace.x,this.extraSpace.y)
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			this.extraSpace.x + this.screenShakeSpace.x,
+			this.extraSpace.y + this.screenShakeSpace.y,
+		)
+
 		game.currentArea.layers[0].allTiles.forEach(tile => {
 			this.ctx.strokeStyle = tile.stroke
 			this.ctx.lineWidth = tile.strokeWidth ? tile.strokeWidth : 1
@@ -196,15 +207,13 @@ export class Canvas{
 	}
 	drawText(text){
 		this.ctx.globalAlpha = text.opacity
-
-		this.ctx.setTransform(
-			this.zoom, 0, 0, this.zoom, 
-			(text.des.x + this.extraSpace.x) * this.zoom,
-			(text.des.y + this.extraSpace.y) * this.zoom
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			text.des.x * this.zoom + this.extraSpace.x + this.screenShakeSpace.x,
+			text.des.y * this.zoom + this.extraSpace.y + this.screenShakeSpace.y,
 		)
-
 		this.ctx.font = text.font
 		this.ctx.textAlign = text.textAlign
+
 		if(text.fill){
 			this.ctx.fillStyle = text.fill
 			this.ctx.fillText(text.value,0,0)
@@ -224,9 +233,9 @@ export class Canvas{
 		})
 	}
 	drawComponent(component){
-		this.ctx.setTransform(1,0,0,1,
-			component.pos.x + this.extraSpace.x,
-			component.pos.y + this.extraSpace.y
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			component.pos.x + this.extraSpace.x + this.screenShakeSpace.x,
+			component.pos.y + this.extraSpace.y + this.screenShakeSpace.y
 		)
 		this.ctx.globalAlpha = Math.min(component.opacity,component.parent.opacity)
 
@@ -319,5 +328,24 @@ export class Canvas{
 		this.ctx.globalAlpha = this.opacity ? this.opacity : 1
 		this.ctx.fillStyle = this.fill
 		this.ctx.fillRect(0,0,this.width,this.height)
+	}
+	resize(){
+		let correctSize = new Vector2D(document.body.offsetWidth,document.body.offsetHeight)
+
+		if(correctSize.x < correctSize.y * game.ratio){
+			correctSize.y = correctSize.x / game.ratio
+		}
+		else correctSize.x = correctSize.y * game.ratio
+
+		this.updateSize(correctSize)
+		const diference = Math.min(correctSize.x / game.resolution.x,correctSize.y / game.resolution.y)
+
+		this.zoom = Math.floor(diference * 2 / 0.25) * 0.25 
+		
+		if(game.currentArea){
+			const displayArea = Vector2D.mult(game.currentArea.displaySize,this.zoom)
+			
+			this.extraSpace.set(Vector2D.sub(correctSize,displayArea).div(2).roundDown())
+		}
 	}
 }

@@ -15,6 +15,8 @@ export class Area{
 		this.movementRequests = []
 
 		this.size = new Vector2D(this.layers[0].width,this.layers[0].height)
+		this.displaySize = Vector2D.mult(new Vector2D(this.tilewidth,this.tileheight),this.size)
+
 		this.layers.forEach(layer => {
 			layer.allTiles = []
 			layer.tiles = new Array(this.size.y)

@@ -4,8 +4,8 @@ import {Vector2D} from './geometry.js'
 export class DialogBox extends Component{
 	constructor(){
 		const margin = 15
-		const width = 800
-		const height = 200
+		const width = 540
+		const height = 100
 
 		super({
 			pos: [(canvas.width - width)/2,(canvas.height - height) - 30],
