@@ -6,7 +6,7 @@ export class Area{
 	constructor(areaFile){
 		Object.assign(this,areaFile)
 
-		this.timerDuration = 0
+		this.timerDuration = game.targetFrameRate
 		this.timer = this.timerDuration
 
 		this.entities = []
