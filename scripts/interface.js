@@ -1,14 +1,13 @@
 import {Component} from './components.js'
-import {Vector2D} from './geometry.js'
+import {Vector2D,toRadian} from './geometry.js'
 
 export class DialogBox extends Component{
 	constructor(){
 		const margin = 15
-		const width = 540
+		const width = 270
 		const height = 100
-
 		super({
-			pos: [(canvas.width - width)/2,(canvas.height - height) - 30],
+			pos: ['center',0],
 			width: width,
 			height: height,
 			fill: '#340c03',
@@ -30,12 +29,13 @@ export class DialogBox extends Component{
 			stroke: '#000',
 			pos: [margin*1.5,margin*1.5],
 			textPos: [10,10],
-			width: 800,
-			height: 200,
+			width: width,
+			height: height,
 			textFill: '#fff',
 			textBaseline: 'top',
 			lineSpacing: 1.4,
 		},'textDisplay')
+		
 		
 		this.textAnimationTimeout = 0
 		this.textSpeed = 1.5 * game.targetFrameRate
@@ -405,5 +405,22 @@ class ItemDisplay extends Component{
 			this.getCentered()
 		}
 		else this.cells = []
+	}
+}
+
+export class DayNightClock extends Component{
+	constructor(){
+		super({
+			pos: [100,100],
+			image: loader.images.dayClock.image,
+		})
+		this.createChild({
+			pos: ['center','center'],
+			image: loader.images.dayClockPointer.image,
+			origin: [0.5,0.5],
+		},'pointer')
+	}
+	updatePointer(){
+		this.pointer.radian = toRadian(game.currentArea.time.scale * 360)
 	}
 }

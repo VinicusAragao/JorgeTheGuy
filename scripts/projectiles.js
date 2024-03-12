@@ -3,7 +3,7 @@ import {DrawableObject} from './canvas.js'
 
 class BasicProjectile extends DrawableObject{
 	constructor(creator,direction,tileset){
-		super(tileset,Vector2D.add(creator.cell,direction),creator.area)
+		super(tileset,creator.cell,creator.area)
 		this.creator = creator
 
 		this.alive = true

@@ -41,35 +41,7 @@ export class Loader{
 	))}
 	buildTilesetFromXML(doc){		
 		return new Promise(resolve => {
-			const layer = {}
-			const tileset = doc.querySelector('tileset').attributes 
-			// const collisionObjects = doc.querySelector('objectgroup')
-
-			// if(collisionObjects){
-			// 	layer.collision = [] 
-			// 	collisionObjects.querySelectorAll('object').forEach(obj => {
-			// 		const hitbox = {
-			// 			x: Number(obj.attributes.x.value),
-			// 			y: Number(obj.attributes.y.value)
-			// 		}
-
-			// 		if(obj.querySelector('ellipse')){
-			// 			hitbox.r = Math.min(
-			// 				Number(obj.attributes.width.value),
-			// 				Number(obj.attributes.height.value)
-			// 			) / 2
-			// 			hitbox.x += hitbox.r
-			// 			hitbox.y += hitbox.r
-			// 			hitbox.format = 'circle'
-			// 		}
-			// 		else{
-			// 			hitbox.w = Number(obj.attributes.width.value)
-			// 			hitbox.h = Number(obj.attributes.height.value)
-			// 			hitbox.format = 'rect'
-			// 		}
-			// 		layer.collision.push(hitbox)
-			// 	})
-			// }
+			const tileset = {}
 
 			for(const tile of doc.querySelectorAll('tile')){
 				const properties = {}
@@ -95,19 +67,54 @@ export class Loader{
 					if(attributes.type.value === 'bool'){
 						properties[attributes.name.value] = attributes.value.value === 'true' ? true : false
 					}
+					if(attributes.type.value === 'int' || attributes.type.value === 'float'){
+						properties[attributes.name.value] = attributes.value.value = Number(attributes.value.value)
+					}
 				}
-				layer[tile.attributes.id.value] = properties
+
+				const collisionObjects = tile.querySelector('objectgroup')
+				if(collisionObjects){
+					properties.collision = []
+
+					collisionObjects.querySelectorAll('object').forEach((obj,index) => {
+						const hitbox = {
+							x: Number(obj.attributes.x.value),
+							y: Number(obj.attributes.y.value)
+						}
+
+						if(obj.querySelector('ellipse')){
+							hitbox.r = Math.min(
+								Number(obj.attributes.width.value),
+								Number(obj.attributes.height.value)
+							) / 2
+							hitbox.x += hitbox.r
+							hitbox.y += hitbox.r
+							hitbox.format = 'circle'
+						}
+						else if(obj.attributes.width || obj.attributes.height){
+							hitbox.w = Number(obj.attributes.width.value)
+							hitbox.h = Number(obj.attributes.height.value)
+							hitbox.format = 'rect'
+						}
+						else hitbox.format = 'point'
+
+						properties.collision.push(hitbox)
+					})
+				}
+				tileset[tile.attributes.id.value] = properties
 			}
 
 			this.loadImage(doc.querySelector('image').attributes.source.value).then(img => { 
-				layer.image = img
-				layer.imageName = tileset.name.value
-				layer.columns = Number(tileset.columns.value)
-				layer.tilecount = Number(tileset.tilecount.value)
-				layer.tilewidth = Number(tileset.tilewidth.value)
-				layer.tileheight = Number(tileset.tileheight.value)
+				const tilesetAttributes = doc.querySelector('tileset').attributes 
+				
+				tileset.image = img
+				tileset.imageName = tilesetAttributes.name.value
+				tileset.columns = Number(tilesetAttributes.columns.value)
+				tileset.tilecount = Number(tilesetAttributes.tilecount.value)
+				tileset.tilewidth = Number(tilesetAttributes.tilewidth.value)
+				tileset.tileheight = Number(tilesetAttributes.tileheight.value)
 
-				resolve(layer)
+				resolve(tileset)
 			})	
 		})
 	}

@@ -4,7 +4,14 @@
  <tile id="0">
   <properties>
    <property name="blocked" type="bool" value="false"/>
+   <property name="generatesLight" type="bool" value="true"/>
+   <property name="lightStrenght" type="float" value="50"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
   <animation>
    <frame tileid="0" duration="100"/>
    <frame tileid="1" duration="100"/>
@@ -20,16 +27,31 @@
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="2">
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="16" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="3">
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="3">
+   <object id="2" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="4">
   <properties>
@@ -55,21 +77,41 @@
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="9">
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="10">
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="14" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="11">
   <properties>
    <property name="blocked" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="15" y="5">
+    <point/>
+   </object>
+  </objectgroup>
  </tile>
  <tile id="12">
   <properties>

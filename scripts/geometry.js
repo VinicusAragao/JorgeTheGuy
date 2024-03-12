@@ -5,34 +5,38 @@ export class Vector2D{
 
 		if(typeof arg1 === 'object' && arg1 !== null){
 			this.x = arg1.x !== undefined ? Number(arg1.x) : Number(arg1[0])
-			this.y = arg1.y !== undefined ? Number(arg1.y) : Number(arg1[1])
+			this.y = arg1.y !== undefined ? Number(arg1.y) : Number(arg1[1])	
 		}
 		else{
 			if(arg2 === undefined || arg2 === null){
 				this.x = arg1 ? Number(arg1) : 0 
-				this.y = arg1 ? Number(arg1) : 0
+				this.y = arg1 ? Number(arg1) : 0	
 			}
 			else{
 				this.x = arg1 ? Number(arg1) : 0 
-				this.y = arg2 ? Number(arg2) : 0
+				this.y = arg2 ? Number(arg2) : 0	
 			}
 		}
+		this.x = this.x === null ? 0 : this.x
+		this.y = this.y === null ? 0 : this.y
 	}
 	set(arg1,arg2){
 		if(typeof arg1 === 'object' && arg1 !== null){
 			this.x = arg1.x !== undefined ? Number(arg1.x) : Number(arg1[0])
-			this.y = arg1.y !== undefined ? Number(arg1.y) : Number(arg1[1])
+			this.y = arg1.y !== undefined ? Number(arg1.y) : Number(arg1[1])	
 		}
 		else{
 			if(arg2 === undefined || arg2 === null){
 				this.x = arg1 ? Number(arg1) : 0 
-				this.y = arg1 ? Number(arg1) : 0
+				this.y = arg1 ? Number(arg1) : 0	
 			}
 			else{
 				this.x = arg1 ? Number(arg1) : 0 
-				this.y = arg2 ? Number(arg2) : 0
+				this.y = arg2 ? Number(arg2) : 0	
 			}
 		}
+		this.x = this.x === null ? 0 : this.x
+		this.y = this.y === null ? 0 : this.y
 		return this
 	}
 	reset(){

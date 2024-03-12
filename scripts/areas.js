@@ -6,13 +6,21 @@ export class Area{
 	constructor(areaFile){
 		Object.assign(this,areaFile)
 
-		this.timerDuration = game.targetFrameRate
+		this.timerDuration = 0
 		this.timer = this.timerDuration
 
 		this.entities = []
 		this.projectiles = []
 		this.effects = {}
 		this.movementRequests = []
+		this.lightSources = []
+
+		this.time = {
+			hours: 0,
+			minutes: 0,
+			scale: 0,
+			darkness: '#fff',
+		}
 
 		this.size = new Vector2D(this.layers[0].width,this.layers[0].height)
 		this.displaySize = Vector2D.mult(new Vector2D(this.tilewidth,this.tileheight),this.size)
@@ -63,6 +71,23 @@ export class Area{
 				})
 			}
 		}
+	}
+	advanceTime(){
+		this.time.minutes += 5
+		if(this.time.minutes >= 1440){
+			this.time.minutes = 0
+		} 
+		this.time.hours = Math.floor(this.time.minutes / 60)
+
+
+		this.time.scale = this.time.minutes / 1440
+		// console.log(this.time.scale,this.time.hours,this.time.minutes)
+		
+		let hex = Math.floor(this.time.scale * 255).toString(16)
+		hex = hex.length === 1 ? `0${hex}` : hex
+
+		console.log(hex)
+		this.time.darkness = `#${hex}${hex}${hex}`
 	}
 	getPath(startingEntity,endingCell){
 		return pathfinder.getPath(
@@ -141,6 +166,10 @@ export class Area{
 		})
 
 		this.layers[0].allTiles.forEach(tile => tile.itemsInteractions())
+		
+		this.advanceTime()
+		if(this === game.currentArea) dayNightClock.updatePointer() 
+		
 		return true
 	}
 	processMovement(entity){
@@ -155,6 +184,10 @@ export class Area{
 
 			if(request.newCell.x === secondRequest.newCell.x
 			&& request.newCell.y === secondRequest.newCell.y){
+
+				entity.movementRequest = null
+				secondEntity.movementRequest = null
+
 				return
 			}
 		}
@@ -339,7 +372,7 @@ class Tile extends DrawableObject{
 		this.des = Vector2D.mult(cell,this.size)
 		
 		this.entity = null
-		this.items = [] 
+		this.items = []
 	}
 	itemsInteractions(){
 		this.items.forEach(item => {

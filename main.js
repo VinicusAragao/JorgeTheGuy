@@ -8,6 +8,7 @@ import {AudioPlayer} from './scripts/audioPlayer.js'
 import {
 	DialogBox,
 	Inventory,
+	DayNightClock,
 } from './scripts/interface.js'
 
 import * as Entities from './scripts/entities.js'
@@ -144,7 +145,6 @@ class Game{
 			}
 		}
 		
-
 		this.currentArea.drawFirstLayer()
 		if(game.drawGrid){
 			canvas.drawGrid()
@@ -174,8 +174,9 @@ class Game{
 				if(effect.active) effect.draw()
 			})
 		}
-		canvas.drawTransition()
+		canvas.drawLightning()
 		canvas.drawUI(this.userInterfaces)
+		canvas.drawTransition()
 	}
 	addInterface(newInterface){
 		this.userInterfaces.push(newInterface)
@@ -254,7 +255,9 @@ function initialLoad(){
 		'arrowProjectile.tsx',
 		'bow.tsx',
 		'peasant.tsx',
-		'sword.tsx'
+		'sword.tsx',
+		'dayClock.tsx',
+		'dayClockPointer.tsx'
 	],[
 		'throw.wav',	
 		'rockHit.wav',
@@ -285,11 +288,12 @@ function initialLoad(){
 
 		window.dialogBox = game.addInterface(new DialogBox)
 		window.inventoryInterface = game.addInterface(new Inventory)
+		window.dayNightClock = game.addInterface(new DayNightClock)
 
 		game.currentArea = game.world.areas[game.save.roomY][game.save.roomX]
 		new Entities.Player(new Vector2D(game.save.playerX,game.save.playerY))
 				
-		const entityQuantity = 50
+		const entityQuantity = 0
 		const possibleEntities = Object.assign({},Entities)
 		delete possibleEntities.Player
 		// delete possibleEntities.Militia
@@ -340,6 +344,7 @@ function initialLoad(){
 
 initialLoad()
 /* A Fazer
+1. Iluminação e ciclo dia-e-noite
 2. AI...?
 3. Concertar o movimento... e por consequencia o manejamento de turnos
 4. Mapa(ou minimapa)

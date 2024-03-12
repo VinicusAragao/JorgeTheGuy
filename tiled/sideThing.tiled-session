@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "city15.json",
+    "activeFile": "groundTorch.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -110,11 +110,11 @@
             "scaleInEditor": 1
         },
         "city.json": {
-            "scale": 2,
+            "scale": 0.25,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 258.25,
-                "y": 679.75
+                "x": 114,
+                "y": -146
             }
         },
         "city.tsx": {
@@ -165,8 +165,8 @@
             "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1562,
-                "y": 170
+                "x": 1558,
+                "y": 166
             }
         },
         "city16.json": {
@@ -229,8 +229,8 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": -522,
-                "y": -341.99999999999994
+                "x": -523.3333333333333,
+                "y": -343.3333333333333
             }
         },
         "city5.json": {
@@ -275,6 +275,7 @@
         },
         "cityGate.tsx": {
             "dynamicWrapping": false,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "clashBlock.tsx": {
@@ -288,6 +289,14 @@
         "commerceTend.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 2
+        },
+        "dayClock.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "dayClockPointer.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "frozenLandscape.tsx": {
             "scaleInDock": 1,
@@ -317,7 +326,7 @@
         "groundTorch.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
-            "scaleInEditor": 4
+            "scaleInEditor": 2
         },
         "house.json": {
             "scale": 0.25,
@@ -456,32 +465,28 @@
     "map.width": 20,
     "mapScene.enableWorlds": true,
     "openFiles": [
-        "tree.tsx",
-        "cityGate.tsx",
-        "city.json",
-        "city4.json",
-        "city15.json"
+        "groundTorch.tsx"
     ],
     "project": "sideThing.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "tree.tsx",
-        "cityGate.tsx",
+        "groundTorch.tsx",
+        "wallTorch.tsx",
+        "dayClockPointer.tsx",
         "city.json",
-        "city4.json",
-        "city15.json",
-        "sword.tsx",
+        "dayClock.tsx",
         "city.tsx",
-        "puddleGoblinBlood.tsx",
-        "city19.json",
-        "city18.json",
-        "city16.json",
-        "city14.json"
+        "cityGate.tsx",
+        "city15.json",
+        "city4.json",
+        "tree.tsx",
+        "sword.tsx",
+        "puddleGoblinBlood.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 20,
-        "width": 7
+        "height": 18,
+        "width": 6
     }
 }

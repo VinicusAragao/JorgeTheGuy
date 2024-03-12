@@ -3,17 +3,27 @@ import {Vector2D} from './geometry.js'
 export class Component{
 	constructor(config,parent){
 		this.config = config
-		this.parent = parent ? parent : {width:Infinity,height:Infinity,opacity:1,pos: new Vector2D}
+		this.parent = parent ? parent : {width:game.resolution.x,height:game.resolution.y,opacity:1,pos: new Vector2D}
 
 		this.children = []
 		if(parent) this.parent.children.push(this)
 
-		if(config.pos) this.pos = new Vector2D(config.pos)
-		else this.pos = new Vector2D
-		this.width = config.width ? config.width : 0
-		this.height = config.height ? config.height : 0
-		this.ratio = config.ratio ? config.ratio : null
+		if(Array.isArray(config.pos)){
+			this.config.pos = {
+				x: config.pos[0],
+				y: config.pos[1]
+			}
+		}
+		else this.config.pos = new Vector2D(this.config.pos)
 
+		this.pos = new Vector2D(this.config.pos)
+
+		this.width = config.width ? config.width : config.image ? config.image.width : 0
+		this.height = config.height ? config.height : config.image ? config.image.height : 0	
+		
+		this.ratio = config.ratio ? config.ratio : null
+		this.radian = config.radian ? config.radian : 0
+		this.origin = config.origin ? new Vector2D(config.origin) : new Vector2D(0.5)
 
 		if(typeof this.width === 'string') this.width = this.parent.width * (parseFloat(this.width)/100)
 		if(typeof this.height === 'string') this.height = this.parent.height * (parseFloat(this.height)/100)
@@ -23,24 +33,21 @@ export class Component{
 			this.height = this.height === 0 ? this.width * this.ratio : this.height
 		} 
 
-		if(typeof this.pos.x === 'string'){
-			if(this.pos.x === 'center'){
-				this.pos.x = (this.parent.width - this.width) / 2 + this.parent.pos.x
+		if(typeof this.config.pos.x === 'string'){
+			if(this.config.pos.x === 'center'){
+				this.pos.x = this.parent.width / 2 - this.width + this.parent.pos.x
 			}
-			else this.pos.x = this.parent.pos.x * (parseFloat(this.pos.x)/100)
+			else this.pos.x = this.parent.pos.x * (parseFloat(this.config.pos.x)/100)
 		}
 		else this.pos.x += this.parent.pos.x
 
-		if(typeof this.pos.y === 'string'){
-			if(this.pos.y === 'center'){
-				this.pos.y = (this.parent.height - this.height) / 2 + this.parent.pos.y
+		if(typeof this.config.pos.y === 'string'){
+			if(this.config.pos.y === 'center'){
+				this.pos.y = this.parent.height / 2 - this.height + this.parent.pos.y
 			}
-			else this.pos.y = this.parent.pos.y * (parseFloat(this.pos.y)/100)
+			else this.pos.y = this.parent.pos.y * (parseFloat(this.config.pos.y)/100)
 		}
 		else this.pos.y += this.parent.pos.y
-		
-		this.width = Math.min(this.width,this.parent.width)
-		this.height = Math.min(this.height,this.parent.height)
 
 		this.visible = config.visible === undefined ? true : config.opacity
 		this.opacity = config.opacity === undefined ? 1 : config.opacity
@@ -50,7 +57,7 @@ export class Component{
 
 		this.image = config.image ? config.image : null
 		this.imageDes = config.imageDes ? config.imageDes : new Vector2D 
-		this.imageDesSize = config.imageDesSize ? config.imageDesSize : new Vector2D(this.width,this.height)
+		this.imageDesSize = config.imageDesSize || !this.image ? config.imageDesSize : new Vector2D(this.image.width,this.image.height)
 		this.imageSor = config.imageSor ? config.imageSor : new Vector2D
 
 		this.imageSorSize = this.image ? new Vector2D(this.image.width,this.image.height) : new Vector2D
@@ -98,10 +105,18 @@ export class Component{
 	recaulculatePosition(){
 		if(this.config.pos){
 			if(typeof this.config.pos.x === 'number') this.pos.x = this.config.pos.x + this.parent.pos.x
-			else if(typeof this.config.pos.x === 'string') this.pos.x = this.parent.pos.x * (parseFloat(this.config.pos.x)/100)	
+			
+			else if(typeof this.config.pos.x === 'string'){
+				if(this.config.pos.x === 'center') this.pos.x = this.parent.width / 2 - this.width + this.parent.pos.x
+				else this.pos.x = this.parent.pos.x * (parseFloat(this.config.pos.x)/100)	
+			}
 
 			if(typeof this.config.pos.y === 'number') this.pos.y = this.config.pos.y + this.parent.pos.y
-			else if(typeof this.config.pos.y === 'string') this.pos.y = this.parent.pos.y * (parseFloat(this.config.pos.y)/100)		
+			
+			else if(typeof this.config.pos.y === 'string'){
+				if(this.config.pos.y === 'center') this.pos.y = this.parent.height / 2 - this.height + this.parent.pos.y
+				else this.pos.y = this.parent.pos.y * (parseFloat(this.config.pos.y)/100)		
+			}
 		}
 		else this.pos.set(this.parent.pos)
 
@@ -117,8 +132,7 @@ export class Component{
 	}
 	createChild(config,optionalName){
 		if(optionalName){
-			this[optionalName] = new Component(config,this)
-			return this.optionalName
+			return this[optionalName] = new Component(config,this)	
 		}
 		else return new Component(config,this)
 	}

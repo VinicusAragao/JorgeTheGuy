@@ -25,6 +25,9 @@ export class DrawableObject{
 			if(this.animation){
 				this.animation = Object.assign({},this.animation) 
 			}
+			if(this.generatesLight){
+				this.area.lightSources.push(this)
+			}
 		}
 
 		if(cell){
@@ -66,8 +69,15 @@ export class DrawableObject{
 
 export class Canvas{
 	constructor(){
-		this.c = document.querySelector('canvas')
+		this.c = document.createElement('canvas')
+		document.body.appendChild(this.c) 
 		this.ctx = this.c.getContext('2d')
+
+		this.darknessBuffer = document.createElement('canvas')
+		this.darknessBuffer.ctx = this.darknessBuffer.getContext('2d')
+
+		this.darknessBuffer.width = game.resolution.x/2 
+		this.darknessBuffer.height = game.resolution.y/2
 
 		this.transition = {
 			direction: new Vector2D,
@@ -96,7 +106,9 @@ export class Canvas{
 	}
 	drawTransition(){
 		if(this.transition.direction.x === 0 && this.transition.direction.y === 0) return
-		this.ctx.resetTransform()
+
+		this.ctx.setTransform(1,0,0,1,0,0)
+		this.ctx.globalAlpha = 1
 		this.ctx.fillStyle = '#000'
 		this.ctx.fillRect(this.transition.position.x,this.transition.position.y,this.transition.size.x,this.transition.size.y)
 		this.transition.position.add(Vector2D.mult(this.transition.direction,75))
@@ -173,9 +185,9 @@ export class Canvas{
 			-img.size.x/2,-img.size.y/2,
 			img.size.x,img.size.y,
 		)
-		this.ctx.resetTransform()
 	}
 	drawRect(rect){
+		this.ctx.globalAlpha = rect.opacity
 		this.ctx.setTransform(this.zoom,0,0,this.zoom,
 			this.extraSpace.x + this.screenShakeSpace.x,
 			this.extraSpace.y + this.screenShakeSpace.y,
@@ -190,7 +202,6 @@ export class Canvas{
 			this.ctx.lineWidth = rect.strokeWidth ? rect.strokeWidth : 1
 			this.ctx.strokeRect(rect.des.x,rect.des.y,rect.size.x,rect.size.y)
 		}
-		this.ctx.resetTransform()
 	}
 	drawGrid(){
 		this.ctx.setTransform(this.zoom,0,0,this.zoom,
@@ -203,7 +214,6 @@ export class Canvas{
 			this.ctx.lineWidth = tile.strokeWidth ? tile.strokeWidth : 1
 			this.ctx.strokeRect(tile.des.x,tile.des.y,tile.size.x,tile.size.y)
 		})
-		this.ctx.resetTransform()
 	}
 	drawText(text){
 		this.ctx.globalAlpha = text.opacity
@@ -223,7 +233,6 @@ export class Canvas{
 			this.ctx.lineWidth = text.strokeWidth
 			this.ctx.strokeText(text.value,0,0)
 		}
-		this.ctx.resetTransform()
 	}	
 	drawUI(UIs){
 		UIs.forEach(ui => {
@@ -233,28 +242,33 @@ export class Canvas{
 		})
 	}
 	drawComponent(component){
-		this.ctx.setTransform(this.zoom,0,0,this.zoom,
-			component.pos.x + this.extraSpace.x + this.screenShakeSpace.x,
-			component.pos.y + this.extraSpace.y + this.screenShakeSpace.y
-		)
+		const rotationPos = new Vector2D(-component.width,-component.height).mult(Vector2D.sub(component.origin,1))
+		const rotationSize = new Vector2D(-component.width,-component.height).mult(component.origin)
+
+		this.ctx.imageSmoothingEnabled = this.alias
 		this.ctx.globalAlpha = Math.min(component.opacity,component.parent.opacity)
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			component.pos.x + rotationPos.x + this.extraSpace.x + this.screenShakeSpace.x,
+			component.pos.y + rotationPos.y + this.extraSpace.y + this.screenShakeSpace.y
+		)
+		this.ctx.rotate(component.radian)
 
 		if(component.fill){
 			this.ctx.fillStyle = component.fill
-			this.ctx.fillRect(0,0,component.width,component.height)
+			this.ctx.fillRect(rotationSize.x, rotationSize.y, component.width, component.height)
 		}
 		if(component.stroke){
 			this.ctx.strokeStyle = component.stroke
 			this.ctx.lineWidth = component.strokeWidth
-			this.ctx.strokeRect(0,0,component.width,component.height)
+			this.ctx.strokeRect(rotationSize.x, rotationSize.y, component.width, component.height)
 		}
 		if(component.image){
 			this.ctx.drawImage(
 				component.image,
-				component.imageSor.x,component.imageSor.y,
-				component.imageSorSize.x,component.imageSorSize.y,
-				component.imageDes.x,component.imageDes.y,
-				component.imageDesSize.x,component.imageDesSize.y,
+				component.imageSor.x, component.imageSor.y,
+				component.imageSorSize.x, component.imageSorSize.y,
+				component.imageDes.x + rotationSize.x, component.imageDes.y + rotationSize.y,
+				component.imageDesSize.x, component.imageDesSize.y,
 			)
 		}
 		
@@ -314,20 +328,69 @@ export class Canvas{
 				const extraLineSpace = lineHeight * index * component.lineSpacing
 				if(component.textFill){
 					this.ctx.fillStyle = component.textFill
-					this.ctx.fillText(line,component.textPos.x,component.textPos.y + extraLineSpace)
+					this.ctx.fillText(line, component.textPos.x + rotationSize.x, component.textPos.y + rotationSize.y + extraLineSpace)
 				}
 				if(component.textStroke){
 					this.ctx.strokeStyle = component.textStroke
-					this.ctx.strokeText(line,component.textPos.x,component.textPos.y + extraLineSpace)
+					this.ctx.strokeText(line, component.textPos.x + rotationSize.x, component.textPos.y + rotationSize.y + extraLineSpace)
 				}
 			})
 		}
-		this.ctx.resetTransform()
 	}
 	clear(){
-		this.ctx.globalAlpha = this.opacity ? this.opacity : 1
+		this.ctx.setTransform(1,0,0,1,0,0)
+		this.ctx.globalAlpha = this.opacity
 		this.ctx.fillStyle = this.fill
 		this.ctx.fillRect(0,0,this.width,this.height)
+	}
+	drawLightning(){
+		this.ctx.setTransform(this.zoom,0,0,this.zoom,
+			this.extraSpace.x + this.screenShakeSpace.x,
+			this.extraSpace.y + this.screenShakeSpace.y
+		)
+
+		this.darknessBuffer.ctx.globalCompositeOperation = "source-over"
+		this.darknessBuffer.ctx.fillStyle = game.currentArea.time.darkness
+		this.darknessBuffer.ctx.fillRect(0, 0, this.darknessBuffer.width, this.darknessBuffer.height)
+
+		this.darknessBuffer.ctx.globalCompositeOperation = "lighten"
+
+		game.currentArea.lightSources.forEach(lightSrc => {
+			let lightBuffer = lightSrc.tileset.lightBuffer
+
+			if(!lightBuffer){
+				lightBuffer = document.createElement('canvas')
+				lightBuffer.width = lightSrc.lightStrenght*8
+				lightBuffer.height = lightSrc.lightStrenght*8
+
+				lightBuffer.ctx = lightBuffer.getContext('2d')
+
+				const grad = lightBuffer.ctx.createRadialGradient(
+					lightBuffer.width/2, lightBuffer.height/2, lightSrc.lightStrenght,
+					lightBuffer.width/2, lightBuffer.height/2, lightSrc.lightStrenght*4,
+				)
+				grad.addColorStop(0,'#edc40c')
+				grad.addColorStop(0.1,'#b88611')
+				grad.addColorStop(0.6,'#cc560c')
+				grad.addColorStop(1,'transparent')
+				
+				lightBuffer.ctx.fillStyle = grad
+				lightBuffer.ctx.fillRect(0,0,lightBuffer.width,lightBuffer.height)
+				
+				lightSrc.tileset.lightBuffer = lightBuffer
+			}
+
+			const lightCenter = lightSrc.tileset[lightSrc.tileValue].collision[0]
+			this.darknessBuffer.ctx.drawImage(lightBuffer,
+				lightSrc.des.x + lightCenter.x - lightBuffer.width/2,
+				lightSrc.des.y + lightCenter.y - lightBuffer.height/2
+			)
+		})
+
+		this.ctx.globalCompositeOperation = "multiply"
+		this.ctx.globalAlpha = 1
+		this.ctx.drawImage(this.darknessBuffer,0,0)
+		this.ctx.globalCompositeOperation = "source-over"
 	}
 	resize(){
 		let correctSize = new Vector2D(document.body.offsetWidth,document.body.offsetHeight)
